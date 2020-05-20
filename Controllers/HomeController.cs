@@ -1,7 +1,10 @@
 ﻿using System.Collections.Generic;
+using System.Data.SqlClient;
+using HandshakeGame.Database;
 using HandshakeGame.GeoJson;
 using HandshakeGame.Wrappers.ISS;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 
 // For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -10,9 +13,18 @@ namespace HandshakeGame.Controllers
     public class HomeController : Controller
     {
 
+        IDBConnection connection;
+        ILogger logger;
+        public HomeController(IDBConnection conn, ILogger<HomeController> logger)
+        {
+            connection = conn;
+            this.logger = logger;
+        }
+
         // GET: /<controller>/
         public IActionResult Index()
         {
+            SqlConnection conn = connection.getConnection();
             return View();
         }
 
