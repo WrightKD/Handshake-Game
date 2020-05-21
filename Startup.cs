@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using HandshakeGame.Database;
+using HandshakeGame.Database.Models;
+using HandshakeGame.Models;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -19,6 +21,7 @@ namespace HandshakeGame
         {
             services.AddMvc();
             services.AddSingleton<IDBConnection, DBConnection>();
+            services.AddSingleton<IDBModel<User, UserCreate>, Users>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

@@ -1,7 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Data.SqlClient;
 using HandshakeGame.Database;
+using HandshakeGame.Database.Models;
 using HandshakeGame.GeoJson;
+using HandshakeGame.Models;
 using HandshakeGame.Wrappers.ISS;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -12,19 +14,19 @@ namespace HandshakeGame.Controllers
 {
     public class HomeController : Controller
     {
-
-        IDBConnection connection;
+        IDBModel<User, UserCreate> users;
         ILogger logger;
-        public HomeController(IDBConnection conn, ILogger<HomeController> logger)
+        public HomeController(ILogger<HomeController> logger, IDBModel<User, UserCreate> users)
         {
-            connection = conn;
+            this.users = users;
             this.logger = logger;
         }
 
         // GET: /<controller>/
         public IActionResult Index()
         {
-            SqlConnection conn = connection.getConnection();
+            UserCreate userCreate = new UserCreate("dane.horn@gmail.com", "greatdane", false);
+            User user = users.Create(userCreate);
             return View();
         }
 
