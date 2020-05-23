@@ -49,17 +49,8 @@
         </div>
     </div>
     <div id='map'></div>
-    <div id="CovidBar" class="w3-row UIText" style="position: relative;">
-        <div style="width: 10%" class="w3-col l2 w3-dark-grey w3-center"><p>South Africa</p></div>
-        <div style="width: 10%" class="w3-col l2 w3-dark-grey w3-center"><p>South Africa</p></div>
-        <div style="width: 10%" class="w3-col l2 w3-dark-grey w3-center"><p>South Africa</p></div>
-        <div style="width: 10%" class="w3-col l2 w3-dark-grey w3-center"><p>South Africa</p></div>
-        <div style="width: 10%" class="w3-col l2 w3-dark-grey w3-center"><p>South Africa</p></div>
-        <div style="width: 10%" class="w3-col l2 w3-dark-grey w3-center"><p>South Africa</p></div>
-        <div style="width: 10%" class="w3-col l2 w3-dark-grey w3-center"><p>South Africa</p></div>
-        <div style="width: 10%" class="w3-col l2 w3-dark-grey w3-center"><p>South Africa</p></div>
-        <div style="width: 10%" class="w3-col l2 w3-dark-grey w3-center"><p>South Africa</p></div>
-        <div style="width: 10%" class="w3-col l2 w3-dark-grey w3-center"><p>South Africa</p></div>
+    <div id="CovidBar" class="w3-row UIText w3-dark-grey" style="position: relative;">
+  
     </div>
     <script src='https://api.mapbox.com/mapbox-gl-js/v1.8.1/mapbox-gl.js'></script>
 
@@ -109,6 +100,41 @@
         }
 
         document.getElementById("CovidBar").style.top = (document.getElementById("map").offsetHeight - 2) + "px";
+
+        const getData = async () => {
+
+            // This is the new API with my key, but it's not http. I've tried a lot to make it work, but it refuses to
+            //let response = await fetch('https://corona-stats.mobi/api/json.2.0.php?key=3BVeoNyhI6QCd1xRl0JK');
+
+             let response = await fetch('https://bozzaapi.azurewebsites.net/api/stats');
+            let data = await response.json();
+            console.log(data)
+            data = data[0];
+            let processedData = {};
+            
+            processedData.gp = data.RSA.GP.Cases[data.RSA.GP.Cases.length - 1];
+            processedData.ec = data.RSA.EC.Cases[data.RSA.EC.Cases.length - 1];
+            processedData.fs = data.RSA.FS.Cases[data.RSA.FS.Cases.length - 1];
+            processedData.kzn = data.RSA.KZN.Cases[data.RSA.KZN.Cases.length - 1];
+            processedData.mp = data.RSA.MP.Cases[data.RSA.MP.Cases.length - 1];
+            processedData.nc = data.RSA.NC.Cases[data.RSA.NC.Cases.length - 1];
+            processedData.nw = data.RSA.NW.Cases[data.RSA.NW.Cases.length - 1];
+            processedData.wc = data.RSA.WC.Cases[data.RSA.WC.Cases.length - 1];
+            processedData.lp = data.RSA.LP.Cases[data.RSA.LP.Cases.length - 1];
+            processedData.national = data.RSA.National.Cases[data.RSA.National.Cases.length - 1];
+
+            return await processedData;
+        }
+
+        getData().then((stats) => {
+            var list = ''
+            for (const [key, value] of Object.entries(stats)) {
+                list += '<div style="width: 10%" class="w3-col l2 w3-dark-grey w3-center"><p>' + key.toUpperCase() + ': ' + value +'</p></div>'
+            }
+            document.getElementById("CovidBar").innerHTML = list;
+        });
+        
+
     </script>
 
 </body>
