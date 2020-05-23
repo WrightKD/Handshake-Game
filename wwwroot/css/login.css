@@ -1,0 +1,152 @@
+.loginHeader {
+    color: #363636;
+    font-family: "Great Vibes", cursive;
+    font-size: 120px;
+    line-height: 160px;
+    font-weight: normal;
+    margin-bottom: 0px;
+    margin-top: 40px;
+    text-align: center;
+    text-shadow: 0 1px 1px #fff;
+}
+.loginbtn {
+    font-family: "Great Vibes", cursive;
+    font-size: 22px;
+    text-align: center;
+}
+
+svg {
+    width: 20%;
+    margin-left: 40%;
+}
+
+
+.right_boy {
+    opacity: 0;
+    transform: translatex(45%);
+    animation: real-man 1.5s ease-in-out forwards;
+}
+
+#Right_boy_hand {
+    transform: rotate(-22deg);
+    transform-origin: 100% 0%;
+    animation: real-man 1s ease-in-out forwards 1.4s;
+}
+
+#bag {
+    transform: rotate(-8deg);
+    transform-origin: 82% 53%;
+    animation: real-man 2.5s ease-in-out infinite alternate;
+}
+
+.left_boy {
+    opacity: 0;
+    transform: translatex(-45%);
+    animation: real-man 1.5s ease-in-out forwards;
+}
+
+#left_boy_hand {
+    transform: rotate(35deg);
+    transform-origin: 5% 25%;
+    animation: real-man 1s ease-in-out forwards 1.4s;
+}
+
+#Left_boy_bag {
+    transform: rotate(8deg);
+    transform-origin: 0% 50%;
+    animation: real-man 2.5s ease-in-out infinite alternate;
+}
+
+@keyframes real-man {
+    to {
+        opacity: 1;
+        transform: translate(0);
+    }
+}
+
+
+.client_fil9 {
+    fill: rgb(32, 32, 32);
+    fill-rule: nonzero
+}
+
+.client_fil15 {
+    fill: #000000;
+    fill-rule: nonzero
+}
+
+.client_fil0 {
+    fill: rgb(0, 0, 0);
+    fill-rule: nonzero
+}
+
+.client_fil3 {
+    fill: rgb(32, 32, 34);
+    fill-rule: nonzero
+}
+
+.client_fil6 {
+    fill: #300901;
+    fill-rule: nonzero
+}
+
+.client_fil7 {
+    fill: rgb(37, 37, 39);
+    fill-rule: nonzero
+}
+
+.client_fil8 {
+    fill: rgb(75, 90, 90);
+    fill-rule: nonzero
+}
+
+.client_fil13 {
+    fill: rgb(35, 34, 39);
+    fill-rule: nonzero
+}
+
+.client_fil16 {
+    fill: rgb(48, 47, 53);
+    fill-rule: nonzero
+}
+
+.client_fil14 {
+    fill: #4CA4DB;
+    fill-rule: nonzero
+}
+
+.client_fil5 {
+    fill: #5E1C17;
+    fill-rule: nonzero
+}
+
+.client_fil10 {
+    fill: rgb(40, 35, 92);
+    fill-rule: nonzero
+}
+
+.client_fil11 {
+    fill: rgb(44, 67, 80);
+    fill-rule: nonzero
+}
+
+.client_fil2 {
+    fill: #D8D8D8;
+    fill-rule: nonzero
+}
+
+.client_fil4 {
+    fill: #DDAC9E;
+    fill-rule: nonzero
+}
+
+.client_fil1 {
+    fill: #E8C8BA;
+    fill-rule: nonzero
+}
+
+.client_fil12 {
+    fill: white;
+    fill-rule: nonzero
+}
+
