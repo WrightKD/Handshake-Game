@@ -10,7 +10,7 @@
     <title>Airport Explorer</title>
     <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
     <link href='https://api.mapbox.com/mapbox-gl-js/v1.8.1/mapbox-gl.css' rel='stylesheet' />
-
+    <link rel="stylesheet" href="css/w3.css">
     <style>
         body {
             margin: 0;
@@ -19,17 +19,48 @@
 
         #map {
             position: absolute;
-            top: 0;
-            bottom: 0;
+            top: 50px;
+            bottom: 50px;
             width: 100%;
         }
-
+        .UIText{
+            font-family: "Great Vibes", cursive;
+        }
     </style>
 
 </head>
 <body>
+    <div class="w3-sidebar  UIText w3-dark-grey w3-bar-block w3-card w3-animate-right" style="display:none;right:0;" id="rightMenu">
+        <button onclick="closeRightMenu()" class="w3-bar-item w3-button w3-large">Close &times;</button>
+        <h5 class=" w3-padding UIText">SHOP</h5>
+        <a href="#" class="w3-bar-item w3-button">Sanitizer: 10 Gold</a>
+        <a href="#" class="w3-bar-item w3-button">Mask: 50 Gold</a>
+        <h5 class=" w3-padding UIText">USER</h5>
+        <a href="#" class="w3-bar-item w3-button">Logout</a>
+    </div>
+    <div id="statsBar" class="w3-row UIText ">
+        <div class="w3-col m2 w3-dark-grey w3-center"><p>XP: 100</p></div>
+        <div class="w3-col m2 w3-dark-grey w3-center"><p>Body: Healthy</p></div>
+        <div class="w3-col m2 w3-dark-grey w3-center"><p>Hands: Clean</p></div>
+        <div class="w3-col m2 w3-dark-grey w3-center"><p>Sanitizer: 10x</p></div>
+        <div class="w3-col m2 w3-dark-grey w3-center"><p>Gold: 100</p></div>
+        <div class="w3-col m2 w3-dark-grey w3-center">
+            <button class="w3-button w3-xlarge" onclick="openRightMenu()">&#9776;</button>
+        </div>
+    </div>
     <div id='map'></div>
-
+    <div id="CovidBar" class="w3-row UIText" style="position: relative;">
+        <div style="width: 10%" class="w3-col l2 w3-dark-grey w3-center"><p>South Africa</p></div>
+        <div style="width: 10%" class="w3-col l2 w3-dark-grey w3-center"><p>South Africa</p></div>
+        <div style="width: 10%" class="w3-col l2 w3-dark-grey w3-center"><p>South Africa</p></div>
+        <div style="width: 10%" class="w3-col l2 w3-dark-grey w3-center"><p>South Africa</p></div>
+        <div style="width: 10%" class="w3-col l2 w3-dark-grey w3-center"><p>South Africa</p></div>
+        <div style="width: 10%" class="w3-col l2 w3-dark-grey w3-center"><p>South Africa</p></div>
+        <div style="width: 10%" class="w3-col l2 w3-dark-grey w3-center"><p>South Africa</p></div>
+        <div style="width: 10%" class="w3-col l2 w3-dark-grey w3-center"><p>South Africa</p></div>
+        <div style="width: 10%" class="w3-col l2 w3-dark-grey w3-center"><p>South Africa</p></div>
+        <div style="width: 10%" class="w3-col l2 w3-dark-grey w3-center"><p>South Africa</p></div>
+    </div>
     <script src='https://api.mapbox.com/mapbox-gl-js/v1.8.1/mapbox-gl.js'></script>
 
     <script>
@@ -44,31 +75,40 @@
 
         map.addControl(nav, 'bottom-right');
 
-         map.on('load',
-             () => {
+        map.on('load',
+            () => {
 
-                 map.loadImage('https://cdn4.iconfinder.com/data/icons/space-mono/64/satellite-512.png', function (error, image) {
-                     if (error) throw error;
-                     map.addImage('ISS', image);
-                 });
+                map.loadImage('https://cdn4.iconfinder.com/data/icons/space-mono/64/satellite-512.png', function (error, image) {
+                    if (error) throw error;
+                    map.addImage('ISS', image);
+                });
 
                 map.addSource("airports",
-                {
-                    type: "geojson",
-                    data: "/home/location"
-                });
+                    {
+                        type: "geojson",
+                        data: "/home/location"
+                    });
 
                 map.addLayer({
-                id: 'airport',
-                type: 'symbol',
-                source: 'airports',
-                layout: {
-                    'icon-image': ['get', 'icon'],
-                    'icon-size': 0.15
-                }
+                    id: 'airport',
+                    type: 'symbol',
+                    source: 'airports',
+                    layout: {
+                        'icon-image': ['get', 'icon'],
+                        'icon-size': 0.15
+                    }
                 });
-        });
+            });
 
+        function openRightMenu() {
+            document.getElementById("rightMenu").style.display = "block";
+        }
+
+        function closeRightMenu() {
+            document.getElementById("rightMenu").style.display = "none";
+        }
+
+        document.getElementById("CovidBar").style.top = (document.getElementById("map").offsetHeight - 2) + "px";
     </script>
 
 </body>
