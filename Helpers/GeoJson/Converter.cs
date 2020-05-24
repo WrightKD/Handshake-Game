@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 
-namespace HandshakeGame.GeoJson
+namespace Handshake.GeoJson
 {
     public class Converter
     {
