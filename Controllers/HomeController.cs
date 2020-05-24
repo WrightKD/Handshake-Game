@@ -30,6 +30,7 @@ namespace HandshakeGame.Controllers
             return View();
         }
 
+   
         public IActionResult Location()
         {
             var currentlocation = ISS.ShowCurrentLocation();
