@@ -25,8 +25,6 @@ namespace HandshakeGame.Controllers
         // GET: /<controller>/
         public IActionResult Index()
         {
-            UserCreate userCreate = new UserCreate("dane.horn@gmail.com", "greatdane", false);
-            User user = users.Create(userCreate);
             return View();
         }
 
