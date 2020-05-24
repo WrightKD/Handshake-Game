@@ -8,7 +8,7 @@ namespace HandshakeGame.Database.Models
     public interface IDBModel<T, TCreate>
     {
         public List<T> GetAll();
-        public T GetOne();
+        public T GetOne(int id);
         public void Update(T item);
         public void Delete(T item);
         public T Create(TCreate item);
