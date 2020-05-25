@@ -28,7 +28,7 @@ namespace Handshake
         {
             services.AddControllersWithViews();
             services.AddSingleton<IDBConnection, DBConnection>();
-            services.AddSingleton<IDBModel<User, UserCreate>, Users>();
+            services.AddSingleton<Users>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

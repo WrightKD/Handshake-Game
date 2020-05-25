@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Data.SqlClient;
 using HandshakeGame.Database;
 using HandshakeGame.Database.Models;
@@ -14,9 +15,9 @@ namespace HandshakeGame.Controllers
 {
     public class HomeController : Controller
     {
-        IDBModel<User, UserCreate> users;
+        Users users;
         ILogger logger;
-        public HomeController(ILogger<HomeController> logger, IDBModel<User, UserCreate> users)
+        public HomeController(ILogger<HomeController> logger, Users users)
         {
             this.users = users;
             this.logger = logger;
