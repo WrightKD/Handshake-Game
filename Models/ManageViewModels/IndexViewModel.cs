@@ -21,5 +21,7 @@ namespace WebApp.Models.ManageViewModels
         public string PhoneNumber { get; set; }
 
         public string StatusMessage { get; set; }
+
+        public string Roles { get; set; }
     }
 }

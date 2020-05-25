@@ -16,7 +16,7 @@ using WebApp.Models.ManageViewModels;
 
 namespace Handshake.Controllers
 {
-    [Authorize]
+    [Authorize(Roles = "ADMIN")]
     public class ManageController : Controller
     {
         private readonly UserManager<ApplicationUser> _userManager;
@@ -54,6 +54,7 @@ namespace Handshake.Controllers
                 Email = user.Email,
                 PhoneNumber = user.PhoneNumber,
                 IsEmailConfirmed = user.EmailConfirmed,
+                Roles = user.Roles.FirstOrDefault(),
                 StatusMessage = StatusMessage
             };
 

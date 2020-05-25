@@ -1,6 +1,7 @@
 ﻿using Dapper;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
+using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Threading;
 using System.Threading.Tasks;
@@ -9,7 +10,7 @@ using WebApp.Models;
 namespace Handshake.Database
 {
     public class UserStore : IUserStore<ApplicationUser>,IUserEmailStore<ApplicationUser>, IUserPhoneNumberStore<ApplicationUser>,
-        IUserTwoFactorStore<ApplicationUser>, IUserPasswordStore<ApplicationUser>
+        IUserTwoFactorStore<ApplicationUser>, IUserPasswordStore<ApplicationUser>, IUserRoleStore<ApplicationUser>
     {
         private readonly string _connectionString;
 
@@ -115,7 +116,8 @@ namespace Handshake.Database
                 [PasswordHash] = @{nameof(ApplicationUser.PasswordHash)},
                 [PhoneNumber] = @{nameof(ApplicationUser.PhoneNumber)},
                 [PhoneNumberConfirmed] = @{nameof(ApplicationUser.PhoneNumberConfirmed)},
-                [TwoFactorEnabled] = @{nameof(ApplicationUser.TwoFactorEnabled)}
+                [TwoFactorEnabled] = @{nameof(ApplicationUser.TwoFactorEnabled)},
+                [SerializedRoles] = @{nameof(ApplicationUser.SerializedRoles)}
                 WHERE [Id] = @{nameof(ApplicationUser.Id)}", user);
             }
 
@@ -250,6 +252,37 @@ namespace Handshake.Database
             user.TwoFactorEnabled = enabled;
             return Task.FromResult(0);
         }
+
+        public async Task AddToRoleAsync(ApplicationUser user, string roleName, CancellationToken cancellationToken)
+        {
+            if (!user.Roles.Contains(roleName))
+            {
+                user.Roles.Add(roleName);
+                await UpdateAsync(user, cancellationToken);
+            }
+        }
+
+        public Task<IList<string>> GetRolesAsync(ApplicationUser user, CancellationToken cancellationToken)
+        {
+            return Task.FromResult(user.Roles);
+        }
+
+        public Task<IList<ApplicationUser>> GetUsersInRoleAsync(string roleName, CancellationToken cancellationToken)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public Task<bool> IsInRoleAsync(ApplicationUser user, string roleName, CancellationToken cancellationToken)
+        {
+            return Task.FromResult(user.Roles.Contains(roleName));
+        }
+
+        public async Task RemoveFromRoleAsync(ApplicationUser user, string roleName, CancellationToken cancellationToken)
+        {
+            if (user.Roles.Remove(roleName))
+                await UpdateAsync(user, cancellationToken);
+        }
+
         #endregion
     }
 }

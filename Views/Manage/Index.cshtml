@@ -15,6 +15,10 @@
                 <input asp-for="Username" class="form-control" disabled />
             </div>
             <div class="form-group">
+                <label asp-for="Roles"></label>
+                <input asp-for="Roles" class="form-control" disabled />
+            </div>
+            <div class="form-group">
                 <label asp-for="Email"></label>
                 @if (Model.IsEmailConfirmed)
                 {
