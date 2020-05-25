@@ -8,12 +8,16 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
+using System;
+using System.Threading.Tasks;
 using WebApp.Models;
 
 namespace Handshake
 {
     public class Startup
     {
+
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
@@ -36,12 +40,8 @@ namespace Handshake
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IServiceProvider serviceProvider)
         {
-
-
-
-
 
             if (env.IsDevelopment())
             {
@@ -67,6 +67,29 @@ namespace Handshake
                     name: "default",
                     pattern: "{controller=Home}/{action=Index}/{id?}");
             });
+
+            CreateRoles(serviceProvider).Wait();
+
+        }
+
+        private async Task CreateRoles(IServiceProvider serviceProvider)
+        {
+          
+            var RoleManager = serviceProvider.GetRequiredService<RoleManager<ApplicationRole>>();
+          
+            string[] roleNames = { "Admin", "Player" };
+
+            IdentityResult roleResult;
+
+            foreach (var roleName in roleNames)
+            {
+                var roleExist = await RoleManager.RoleExistsAsync(roleName);
+                if (!roleExist)
+                {
+                    roleResult = await RoleManager.CreateAsync(new ApplicationRole { Name = roleName });
+                }
+            }
+
         }
     }
 }
