@@ -1,6 +1,6 @@
 using System;
 
-namespace Handshake.Models
+namespace WebApp.Models
 {
     public class ErrorViewModel
     {
