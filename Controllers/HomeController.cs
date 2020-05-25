@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Data.SqlClient;
+using Handshake.Wrappers.Place;
+using Handshake.Wrappers.Weather;
 using HandshakeGame.Database;
 using HandshakeGame.Database.Models;
 using HandshakeGame.GeoJson;
@@ -31,21 +33,60 @@ namespace HandshakeGame.Controllers
    
         public IActionResult Location()
         {
-            var currentlocation = ISS.ShowCurrentLocation();
 
-            var currentProperties = new Dictionary<string, string>
+
+
+            // Add the ISS as an easter egg?
+            //var currentlocation = ISS.ShowCurrentLocation();
+
+            //var currentProperties = new Dictionary<string, string>
+            //{
+            //    {"message", currentlocation.Message},
+            //    {"timestamp", currentlocation.Timestamp.ToString()},
+            //    {"icon", "ISS" }
+            //};
+
+            //var geolocation = Converter.GetGeoJSON(
+            //    new List<string> { currentlocation.IssPosition.Latitude, currentlocation.IssPosition.Longitude },
+            //    currentProperties
+            //);
+
+
+
+
+            //Get a list of hospitals in a radius of 1,5km at the center -26.1796856,28.0509079
+            // The hospital is the type of place. It is case sensitive 
+            // Vaild types : https://developers.google.com/places/supported_types#table1
+
+            var lat = "-26.1796856";
+            var lon = "28.0509079";
+
+            var hospitals = PlaceService.GetPlaces("hospital", "1500", lat, lon);
+
+            var weather = WeatherService.GetWeatherDetails(lat, lon);
+
+            var properties = new List<Dictionary<string, string>>();
+            var coordinates = new List<List<double>>();
+
+            foreach (var item in hospitals.Results)
             {
-                {"message", currentlocation.Message},
-                {"timestamp", currentlocation.Timestamp.ToString()},
-                {"icon", "ISS" }
-            };
+                var open = item.OpeningHours?.OpenNow;
 
-            //var upcomingLocation = ISS.ShowUpcomingPasses();
+                var currentProperties = new Dictionary<string, string>
+                {
+                    {"name", item.Name },
+                    {"open", open.HasValue ? (open.Value ? "Open" : "Closed") : "Unknow" },
+                    {"rating", item.Rating.HasValue ? $"{item.Rating.Value}" : "None" },
+                    {"temp" ,  weather.Main.Temp.ToString()}
+                };
 
-            var geolocation = Converter.GetGeoJSON(
-                new List<string> { currentlocation.IssPosition.Latitude, currentlocation.IssPosition.Longitude },
-                currentProperties
-            );
+                properties.Add(currentProperties);
+                coordinates.Add(new List<double> { item.Geometry.Location.Lng, item.Geometry.Location.Lat });
+
+            }
+
+
+            var geolocation = Converter.GetGeoJSON(coordinates, properties);
 
             return new JsonResult(geolocation);
         }

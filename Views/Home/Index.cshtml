@@ -44,29 +44,47 @@
 
         map.addControl(nav, 'bottom-right');
 
-         map.on('load',
-             () => {
-
-                 map.loadImage('https://cdn4.iconfinder.com/data/icons/space-mono/64/satellite-512.png', function (error, image) {
-                     if (error) throw error;
-                     map.addImage('ISS', image);
-                 });
-
-                map.addSource("airports",
+        map.on('load',
+        () => {
+            map.addSource("airports",
                 {
                     type: "geojson",
                     data: "/home/location"
                 });
 
-                map.addLayer({
+            map.addLayer({
                 id: 'airport',
-                type: 'symbol',
+                type: 'circle',
                 source: 'airports',
-                layout: {
-                    'icon-image': ['get', 'icon'],
-                    'icon-size': 0.15
+                filter: ['!has', 'point_count'],
+                paint: {
+                    'circle-color': '#1EF008',
+                    'circle-radius': 6,
+                    'circle-stroke-width': 1,
+                    'circle-stroke-color': '#fff'
                 }
-                });
+            });
+
+            var popup = new mapboxgl.Popup({
+            closeButton: false,
+            closeOnClick: false
+        });
+
+        map.on('mouseenter', 'airport', function(e) {
+            // Change the cursor style as a UI indicator.
+            map.getCanvas().style.cursor = 'pointer';
+
+            // Populate the popup and set its coordinates
+            // based on the feature found.
+            popup.setLngLat(e.features[0].geometry.coordinates)
+                .setHTML(e.features[0].properties.name + e.features[0].properties.temp)
+                .addTo(map);
+        });
+
+        map.on('mouseleave', 'airport', function() {
+            map.getCanvas().style.cursor = '';
+            popup.remove();
+        });
         });
 
     </script>
