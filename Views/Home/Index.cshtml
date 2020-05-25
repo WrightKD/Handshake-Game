@@ -10,7 +10,7 @@
     <title>Airport Explorer</title>
     <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
     <link href='https://api.mapbox.com/mapbox-gl-js/v1.8.1/mapbox-gl.css' rel='stylesheet' />
-
+    <link rel="stylesheet" href="css/w3.css">
     <style>
         body {
             margin: 0;
@@ -19,17 +19,39 @@
 
         #map {
             position: absolute;
-            top: 0;
-            bottom: 0;
+            top: 50px;
+            bottom: 50px;
             width: 100%;
         }
-
+        .UIText{
+            font-family: "Great Vibes", cursive;
+        }
     </style>
 
 </head>
 <body>
+    <div class="w3-sidebar  UIText w3-dark-grey w3-bar-block w3-card w3-animate-right" style="display:none;right:0;" id="rightMenu">
+        <button onclick="closeRightMenu()" class="w3-bar-item w3-button w3-large">Close &times;</button>
+        <h5 class=" w3-padding UIText">SHOP</h5>
+        <a href="#" class="w3-bar-item w3-button">Sanitizer: 10 Gold</a>
+        <a href="#" class="w3-bar-item w3-button">Mask: 50 Gold</a>
+        <h5 class=" w3-padding UIText">USER</h5>
+        <a href="#" class="w3-bar-item w3-button">Logout</a>
+    </div>
+    <div id="statsBar" class="w3-row UIText ">
+        <div class="w3-col m2 w3-dark-grey w3-center"><p>XP: 100</p></div>
+        <div class="w3-col m2 w3-dark-grey w3-center"><p>Body: Healthy</p></div>
+        <div class="w3-col m2 w3-dark-grey w3-center"><p>Hands: Clean</p></div>
+        <div class="w3-col m2 w3-dark-grey w3-center"><p>Sanitizer: 10x</p></div>
+        <div class="w3-col m2 w3-dark-grey w3-center"><p>Gold: 100</p></div>
+        <div class="w3-col m2 w3-dark-grey w3-center">
+            <button class="w3-button w3-xlarge" onclick="openRightMenu()">&#9776;</button>
+        </div>
+    </div>
     <div id='map'></div>
-
+    <div id="CovidBar" class="w3-row UIText w3-dark-grey" style="position: relative;">
+  
+    </div>
     <script src='https://api.mapbox.com/mapbox-gl-js/v1.8.1/mapbox-gl.js'></script>
 
     <script>
@@ -44,30 +66,79 @@
 
         map.addControl(nav, 'bottom-right');
 
-         map.on('load',
-             () => {
+        map.on('load',
+            () => {
 
-                 map.loadImage('https://cdn4.iconfinder.com/data/icons/space-mono/64/satellite-512.png', function (error, image) {
-                     if (error) throw error;
-                     map.addImage('ISS', image);
-                 });
+                map.loadImage('https://cdn4.iconfinder.com/data/icons/space-mono/64/satellite-512.png', function (error, image) {
+                    if (error) throw error;
+                    map.addImage('ISS', image);
+                });
 
                 map.addSource("airports",
-                {
-                    type: "geojson",
-                    data: "/home/location"
-                });
+                    {
+                        type: "geojson",
+                        data: "/home/location"
+                    });
 
                 map.addLayer({
-                id: 'airport',
-                type: 'symbol',
-                source: 'airports',
-                layout: {
-                    'icon-image': ['get', 'icon'],
-                    'icon-size': 0.15
-                }
+                    id: 'airport',
+                    type: 'symbol',
+                    source: 'airports',
+                    layout: {
+                        'icon-image': ['get', 'icon'],
+                        'icon-size': 0.15
+                    }
                 });
+            });
+
+        function openRightMenu() {
+            document.getElementById("rightMenu").style.display = "block";
+        }
+
+        function closeRightMenu() {
+            document.getElementById("rightMenu").style.display = "none";
+        }
+
+        document.getElementById("CovidBar").style.top = (document.getElementById("map").offsetHeight - 2) + "px";
+
+        const getData = async () => {
+
+            // This is the new API with my key, it has a daily request limit of 24
+            //let response = await fetch('https://corona-stats.mobi/api/json.2.0.php?key=3BVeoNyhI6QCd1xRl0JK');
+
+            //please use this api for tesing . it has unlimited request but has a data thats abit out of date 
+            let response = await fetch('https://bozzaapi.azurewebsites.net/api/stats');
+
+            let data = await response.json();
+            console.log(data)
+
+            // if using the corona-stats api please comment the line below out
+            data = data[0];
+
+            let processedData = {};
+            
+            processedData.gp = data.RSA.GP.Cases[data.RSA.GP.Cases.length - 1];
+            processedData.ec = data.RSA.EC.Cases[data.RSA.EC.Cases.length - 1];
+            processedData.fs = data.RSA.FS.Cases[data.RSA.FS.Cases.length - 1];
+            processedData.kzn = data.RSA.KZN.Cases[data.RSA.KZN.Cases.length - 1];
+            processedData.mp = data.RSA.MP.Cases[data.RSA.MP.Cases.length - 1];
+            processedData.nc = data.RSA.NC.Cases[data.RSA.NC.Cases.length - 1];
+            processedData.nw = data.RSA.NW.Cases[data.RSA.NW.Cases.length - 1];
+            processedData.wc = data.RSA.WC.Cases[data.RSA.WC.Cases.length - 1];
+            processedData.lp = data.RSA.LP.Cases[data.RSA.LP.Cases.length - 1];
+            processedData.national = data.RSA.National.Cases[data.RSA.National.Cases.length - 1];
+
+            return await processedData;
+        }
+
+        getData().then((stats) => {
+            var list = ''
+            for (const [key, value] of Object.entries(stats)) {
+                list += '<div style="width: 10%" class="w3-col l2 w3-dark-grey w3-center"><p>' + key.toUpperCase() + ': ' + value +'</p></div>'
+            }
+            document.getElementById("CovidBar").innerHTML = list;
         });
+        
 
     </script>
 

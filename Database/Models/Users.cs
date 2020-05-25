@@ -80,6 +80,17 @@ namespace HandshakeGame.Database.Models
             return user;
         }
 
+        public User GetOneByUsername(string username) {
+            string sql = "SELECT * FROM dbo.Users WHERE Username = @username";
+            SqlCommand command = new SqlCommand(sql, connection);
+            command.Parameters.AddWithValue("@username", username);
+            SqlDataReader reader = command.ExecuteReader();
+            reader.Read();
+            User user = readUser(reader);
+            reader.Close();
+            return user;
+        }
+
         public void Update(User item)
         {
             string sql =
