@@ -1,13 +1,10 @@
 ﻿using Dapper;
-using Handshake.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
-using System;
-using System.Collections.Generic;
 using System.Data.SqlClient;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using WebApp.Models;
 
 namespace Handshake.Database
 {

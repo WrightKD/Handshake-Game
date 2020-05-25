@@ -1,13 +1,11 @@
-﻿using Handshake.Models;
-using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Dapper;
 using System.Data.SqlClient;
+using WebApp.Models;
 
 namespace Handshake.Database
 {
@@ -50,7 +48,7 @@ namespace Handshake.Database
 
         public void Dispose()
         {
-            throw new NotImplementedException();
+            
         }
 
         public async Task<ApplicationRole> FindByIdAsync(string roleId, CancellationToken cancellationToken)
