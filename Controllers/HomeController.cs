@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
+using Handshake.Wrappers.CovidStats;
 using Handshake.Wrappers.Place;
 using Handshake.Wrappers.Weather;
 using HandshakeGame.Database;
@@ -31,7 +32,11 @@ namespace HandshakeGame.Controllers
             return View();
         }
 
-   
+        public IActionResult GetCovidStats()
+        {
+            return Json(CovidStatsService.GetStats());
+        }
+
         public IActionResult Location()
         {
 
