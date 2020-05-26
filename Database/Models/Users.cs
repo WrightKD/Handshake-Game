@@ -47,6 +47,8 @@ namespace HandshakeGame.Database.Models
             while (reader.Read()) {
                 users.Add(readUser(reader));
             }
+
+            
             reader.Close();
             return users;
         }

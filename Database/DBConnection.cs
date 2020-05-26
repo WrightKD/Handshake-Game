@@ -25,7 +25,7 @@ namespace HandshakeGame.Database
 
         public SqlConnection getConnection()
         {
-            string connectionString = "Server=localhost\\SQLEXPRESS;Database=HandshakeDB;Integrated Security=True";
+            string connectionString = "Server=JACOBR\\SQLEXPRESS;Database=HandshakeDB;Integrated Security=True";
             if (connection == null)
             {
                 logger.LogInformation("New connection being created");
