@@ -10,17 +10,12 @@
 
 
 <div>
-    @using (Html.BeginForm("DeleteUser", "Admin"))
+    @using (Html.BeginForm("DeleteUser", "Admin", FormMethod.Post))
     {
-        <div style="color:red;">@Html.ValidationSummary()</div>
-        <div class="row">
-            <!--Show details are saved successfully message-->
-            <div class="col-lg-12">@ViewBag.Message</div>
-        </div><br />
 
         <div class="row">
             <div class="col-lg-2">@Html.LabelFor(a => a)</div>
-            <div class="col-lg-10">@Html.TextBoxFor(a => a.Email, new { @class = "form-control" })</div>
+            <div class="col-lg-10">@Html.TextBoxFor(a => a.Username, new { @class = "form-control" })</div>
         </div>
         <input type="submit" value="Delete" class="btn btn-primary" />
     }
