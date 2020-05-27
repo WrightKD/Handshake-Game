@@ -67,7 +67,7 @@ namespace Handshake.Wrappers.Place
         public partial class Result
         {
             [JsonProperty("business_status")]
-            public BusinessStatus BusinessStatus { get; set; }
+            public string BusinessStatus { get; set; }
 
             [JsonProperty("geometry")]
             public Geometry Geometry { get; set; }
@@ -100,10 +100,10 @@ namespace Handshake.Wrappers.Place
             public string Reference { get; set; }
 
             [JsonProperty("scope")]
-            public Scope Scope { get; set; }
+            public string Scope { get; set; }
 
             [JsonProperty("types")]
-            public List<TypeElement> Types { get; set; }
+            public List<string> Types { get; set; }
 
             [JsonProperty("user_ratings_total", NullValueHandling = NullValueHandling.Ignore)]
             public long? UserRatingsTotal { get; set; }
