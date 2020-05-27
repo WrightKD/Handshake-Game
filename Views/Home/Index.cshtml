@@ -55,12 +55,17 @@
     <script src='https://api.mapbox.com/mapbox-gl-js/v1.8.1/mapbox-gl.js'></script>
 
     <script>
-
+        var playerLat = -26.170458
+        var playerLong = 28.0519267 
         mapboxgl.accessToken = 'pk.eyJ1Ijoid3JpZ2h0a2QiLCJhIjoiY2thN3duNW42MDR5bjJ3c2JibGZjdTc5aSJ9.WfzsXOP8KI0_PVo9su3ubw';
 
         var map = new mapboxgl.Map({
             container: 'map',
-            style: 'mapbox://styles/mapbox/dark-v10'
+            style: 'mapbox://styles/mapbox/dark-v10',
+            zoom: 16,
+            minZoom: 16,
+            maxZoom: 17,
+            center: [ playerLong, playerLat,]
         });
 
         var nav = new mapboxgl.NavigationControl();
@@ -74,6 +79,13 @@
                     if (error) throw error;
                     map.addImage('ISS', image);
                 });
+
+                /* map.loadImage('https://upload.wikimedia.org/wikipedia/commons/thumb/8/88/Map_marker.svg/200px-Map_marker.svg.png', function (error, image) {
+                     if (error) throw error;
+                     map.addImage('npc_image', image);
+                 });
+                 console.log(map.listImages());*/
+
 
                 map.addSource("airports",
                     {
@@ -90,6 +102,8 @@
                         'icon-size': 0.15
                     }
                 });
+
+                initGameData();
             });
 
         function openRightMenu() {
@@ -119,7 +133,114 @@
             }
             document.getElementById("CovidBar").innerHTML = list;
         });
-        
+
+
+        const getPlayerData = async () => {
+            var response = await fetch('/Game/ShakeHand');
+            var data = await response.json();
+            return data;
+            //console.log(data);
+        }
+
+        getPlayerData().then((stats) => {
+           // console.log(stats);
+        });
+
+        const getNPCData = async () => {
+            var response = await fetch('/Game/GetNPCData');
+            var data = await response.json();
+           // console.log(data);
+            return data;
+        }
+
+        getNPCData().then((data) => {
+            //console.log(data);
+        });
+
+        /*const initialiseNPCData = async () => {
+            var response = await fetch('/Game/test?a=0.1');
+            var data = await response.json();
+            console.log(data);
+        }
+
+        initialiseNPCData().then((data2) => {
+            console.log(data2);
+        });*/
+
+        const initialiseNPCData = async () => {
+            var response = await fetch('/Game/InitialiseNPCs?latitude=-26.170458&longitude=28.0519267');
+            var data = await response.json();
+            //console.log(data);
+            return data;
+        }
+
+        const shakeHand = async () => {
+            var response = await fetch('/Game/ShakeHand');
+            var data = await response.json();
+            //console.log(data);
+            return data;
+        }
+
+        function initGameData() {
+            //inits all NPCs
+            initialiseNPCData().then((data) => {
+                console.log(data[0].longitude);
+                map.addSource('npcs_source', {
+                    'type': 'geojson',
+                    'data': {
+                        'type': 'FeatureCollection',
+                        'features': []
+                    }
+                });
+                data.forEach((item) => {
+                    //console.log("a:");
+                    //console.log(a);
+                    map.getSource('npcs_source')._data.features.push({
+                        'type': 'Feature',
+                        'properties': {},
+                        'geometry': {
+                            'type': 'Point',
+                            'coordinates': [
+                                item.longitude,
+                                item.latitude
+                            ]
+                        }
+                    })
+                })
+               // console.log(map.getSource('npcs_source'));
+                map.getSource('npcs_source').setData(map.getSource('npcs_source')._data);
+                //console.log(map.listImages());
+                map.addLayer({
+                    'id': 'npcs_layer',
+                    'type': 'symbol',
+                    'source': 'npcs_source',
+                    'layout': {
+                        'icon-image': 'volcano-15', //this needs to be changed
+                        'icon-size': 2
+                    }
+                });
+
+                // Center the map on the coordinates of any clicked symbol from the 'symbols' layer.
+                map.on('click', 'npcs_layer', function (e) {
+                    //map.flyTo({ center: e.features[0].geometry.coordinates });
+                    shakeHand().then((data) => {
+                        console.log('score: '+data);
+                    });
+                });
+
+                // Change the cursor to a pointer when the it enters a feature in the 'symbols' layer.
+                map.on('mouseenter', 'npcs_layer', function () {
+                    map.getCanvas().style.cursor = 'pointer';
+                });
+
+                // Change it back to a pointer when it leaves.
+                map.on('mouseleave', 'npcs_layer', function () {
+                    map.getCanvas().style.cursor = '';
+                });
+
+                 console.log(map.getLayer('npcs_layer'));
+            });
+        };
 
     </script>
 

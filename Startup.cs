@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Handshake.GameLogic;
 using HandshakeGame.Database;
 using HandshakeGame.Database.Models;
 using HandshakeGame.Models;
@@ -29,6 +30,7 @@ namespace Handshake
             services.AddControllersWithViews();
             services.AddSingleton<IDBConnection, DBConnection>();
             services.AddSingleton<Users>();
+            services.AddSingleton<GameService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
