@@ -38,6 +38,14 @@ namespace HandshakeGame.Database.Models
             command.ExecuteNonQuery();
         }
 
+        public void DeleteByUsername(string username)
+        {
+            string sql = "DELETE FROM dbo.Users where Username = @username";
+            SqlCommand command = new SqlCommand(sql, connection);
+            command.Parameters.AddWithValue("@username", username);
+            command.ExecuteNonQuery();
+        }
+
         public List<User> GetAll()
         {
             string sql = "SELECT * FROM dbo.Users";

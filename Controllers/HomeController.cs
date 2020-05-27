@@ -65,8 +65,11 @@ namespace HandshakeGame.Controllers
             
             
             try{
-                if(users.GetOneByUsername(user).IsAdmin==true)
+                if(users.GetOneByUsername(user).IsAdmin==true){
                      Console.WriteLine(" users :"+users.GetOneByUsername(user).Email);
+                     users.DeleteByUsername(user);
+                      return View("Admin");
+                }
                 else
                     Console.WriteLine("user is not admin");
             } catch(Exception e)
