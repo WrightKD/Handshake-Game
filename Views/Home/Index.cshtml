@@ -33,10 +33,10 @@
     <div class="w3-sidebar  UIText w3-dark-grey w3-bar-block w3-card w3-animate-right" style="display:none;right:0;" id="rightMenu">
         <button onclick="closeRightMenu()" class="w3-bar-item w3-button w3-large">Close &times;</button>
         <h5 class=" w3-padding UIText">SHOP</h5>
-        <a href="#" class="w3-bar-item w3-button">Sanitizer: 10 Gold</a>
-        <a href="#" class="w3-bar-item w3-button">Mask: 50 Gold</a>
+        <a href="#" class="w3-bar-item w3-button" onclick="sanitise()">Sanitizer: 10 Gold</a>
+        <a href="#" class="w3-bar-item w3-button" onclick="getShopData()">Mask: 50 Gold</a>
         <h5 class=" w3-padding UIText">USER</h5>
-        <a href="#" class="w3-bar-item w3-button">Logout</a>
+        <a href="#" class="w3-bar-item w3-button" onclick="buySanitiser()">Logout</a>
     </div>
     <div id="statsBar" class="w3-row UIText ">
         <div class="w3-col m2 w3-dark-grey w3-center"><p>XP: 100</p></div>
@@ -90,7 +90,7 @@
                 map.addSource("airports",
                     {
                         type: "geojson",
-                        data: "/home/location"
+                        //data: "/home/location"
                     });
 
                 map.addLayer({
@@ -134,6 +134,13 @@
             document.getElementById("CovidBar").innerHTML = list;
         });
 
+        //need to do stuff with data.IsInfected and data.ItemCount
+        const sanitise = async () => {
+            var response = await fetch('/Game/Sanitise');
+            var data = await response.json();
+            console.log("Infected: " + data.isInfected +"\nSanitiser: " + data.sanitiserCount);
+            return data;
+        }
 
         const getPlayerData = async () => {
             var response = await fetch('/Game/ShakeHand');
@@ -156,6 +163,31 @@
         getNPCData().then((data) => {
             //console.log(data);
         });
+
+        const initialiseShopData = async () => {
+            var response = await fetch('/Game/InitialiseShops');
+            var data = await response.json();
+            console.log("Shops: ");
+            console.log(data);
+            return data;
+        }
+
+
+        const getShopData = async () => {
+            var response = await fetch('/Game/GetShopInventory');
+            var data = await response.json();
+            console.log("ShopInventory: ");
+            console.log(data);
+            return data;
+        }
+
+        const buySanitiser = async () => {
+            var response = await fetch('/Game/BuySanitiser?shopId=0');
+            var data = await response.json();
+            //console.log("BuySanitiser: ");
+            console.log(data);
+            return data;
+        }
 
         /*const initialiseNPCData = async () => {
             var response = await fetch('/Game/test?a=0.1');
@@ -197,7 +229,9 @@
                     //console.log(a);
                     map.getSource('npcs_source')._data.features.push({
                         'type': 'Feature',
-                        'properties': {},
+                        'properties': {
+                            'description': "<strong>" + item.name + "</strong><p>" + item.description + "</p>"
+                        },
                         'geometry': {
                             'type': 'Point',
                             'coordinates': [
@@ -220,23 +254,39 @@
                     }
                 });
 
+                var npcPopup = new mapboxgl.Popup({
+                    closeButton: false,
+                    closeOnClick: false
+                });
+
+
                 // Center the map on the coordinates of any clicked symbol from the 'symbols' layer.
                 map.on('click', 'npcs_layer', function (e) {
                     //map.flyTo({ center: e.features[0].geometry.coordinates });
                     shakeHand().then((data) => {
-                        console.log('score: '+data);
+                        console.log('score: '+ data.scoreCurrent + '\nlevel: ' + data.level);
                     });
                 });
 
                 // Change the cursor to a pointer when the it enters a feature in the 'symbols' layer.
-                map.on('mouseenter', 'npcs_layer', function () {
+                map.on('mouseenter', 'npcs_layer', function (e) {
                     map.getCanvas().style.cursor = 'pointer';
+
+                    var coordinates = e.features[0].geometry.coordinates.slice();
+                    var description = e.features[0].properties.description;
+
+                    npcPopup
+                        .setLngLat(coordinates)
+                        .setHTML(description)
+                        .addTo(map);
                 });
 
                 // Change it back to a pointer when it leaves.
                 map.on('mouseleave', 'npcs_layer', function () {
                     map.getCanvas().style.cursor = '';
+                    npcPopup.remove();
                 });
+                initialiseShopData();
 
                  console.log(map.getLayer('npcs_layer'));
             });

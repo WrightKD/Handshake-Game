@@ -9,33 +9,91 @@ namespace Handshake.GameLogic
 {
     public class GameService
     {
-        public Player _player;
+        public Player player;
         public List<NPC> NPCs;
+        public List<Shop> shops;
         private Random spawnRoll;
-        private double minVal;
-        private double maxVal;
+        //private double minVal;
+        //private double maxVal;
+        private double valForRandomDouble;
+        private DateTime shopResetTime;
 
         public GameService() 
         { 
-            _player = new Player();
+            player = new Player();
             spawnRoll = new Random((int)DateTime.Now.Ticks);
-            maxVal = 0.005;
-            minVal = -0.005;
+            //maxVal = 0.005;
+            //minVal = -0.005;
+            valForRandomDouble = 0.005;
+            shopResetTime = new DateTime();
+            shopResetTime.AddMinutes(2);
 
             GenerateNPCs(10);
+            TEMPGenerateShop(1);
         }
 
-        public void ShakeHand(double infectionChance)
+        public void ShakeHand(int npcId, double infectionChance)
         {
-            _player.IncreasePoints(1);
-            Random infectionRoll = new Random();
-            if (infectionRoll.NextDouble() < infectionChance)
-                _player.BecomeInfected();
+            player.ScoreTotal += player.HandshakePoints;
+            player.ScoreCurrent += player.HandshakePoints;
+            if (player.ScoreCurrent >= player.ScorePerLevel)
+            {
+                player.Level += player.ScoreCurrent / player.ScorePerLevel;
+                player.ScoreCurrent = player.ScoreCurrent - player.ScorePerLevel;
+            }
+
+            if (NPCs.Find(x => x.ID == npcId).IsInfected)
+            {
+                Random infectionRoll = new Random();
+                if (infectionRoll.NextDouble() < infectionChance)
+                    player.IsInfected = true;
+            }
         }
 
-        public void GetPlayerData()
+        public void UseSanitiser()
+        {
+            if (player.SanitiserCount > 0)
+            {
+                player.SanitiserCount--;
+                player.IsInfected = false;
+            }
+        }
+
+        public void LoadPlayerData()
         {
             //gets data from DB
+        }
+
+        public void SavePlayerData()
+        {
+
+        }
+
+        public object GetShopInventory(int shopId)
+        {
+            //need to add reset
+            return shops.Find(x => x.ID == shopId);
+        }
+
+        public Shop BuySanitiser(int shopId)
+        {
+            Shop shop = shops.Find(x => x.ID == shopId);
+            if (shop.SanitiserCount >= 0 && player.Gold > shop.SanitiserCost)
+            {
+                shop.SanitiserCount --;
+                player.SanitiserCount++;
+                player.Gold -= shop.SanitiserCost;
+            }
+            return shop;
+        }
+        
+        private void TEMPGenerateShop(int numberToSpawn)
+        {
+            shops = new List<Shop>();
+            for (int i = 0; i < numberToSpawn; i++)
+            {
+                shops.Add(new Shop(i));
+            }
         }
 
         private void GenerateNPCs(int numberToSpawn)
@@ -58,7 +116,7 @@ namespace Handshake.GameLogic
 
         private double GetRandomDouble()
         {
-            return spawnRoll.NextDouble() * (maxVal - minVal) + minVal;
+            return spawnRoll.NextDouble() * (2 * valForRandomDouble) - valForRandomDouble;
         }
     }
 }
