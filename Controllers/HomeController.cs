@@ -67,7 +67,7 @@ namespace HandshakeGame.Controllers
             var lat = "-26.1796856";
             var lon = "28.0509079";
 
-            var hospitals = PlaceService.GetPlaces("hospital", "1500", lat, lon);
+            var hospitals = PlaceService.GetPlaces("supermarket", "1500", lat, lon);
 
             var weather = WeatherService.GetWeatherDetails(lat, lon);
 
