@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using Handshake.Models;
 using HandshakeGame.Controllers;
+using HandshakeGame.Models;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -20,7 +22,7 @@ namespace Handshake.Controllers
         private readonly RoleManager<ApplicationRole> _roleManager;
         private readonly ILogger _logger;
 
-        public AccountController(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager, RoleManager<ApplicationRole> roleManager,  ILogger<AccountController> logger)
+        public AccountController(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager, RoleManager<ApplicationRole> roleManager, ILogger<AccountController> logger)
         {
             _userManager = userManager;
             _signInManager = signInManager;
@@ -100,8 +102,8 @@ namespace Handshake.Controllers
             {
                 var user = new ApplicationUser { UserName = model.Email, Email = model.Email };
                 var result = await _userManager.CreateAsync(user, model.Password);
-                
-                
+
+
                 if (result.Succeeded)
                 {
                     _logger.LogInformation("User created a new account with password.");
@@ -142,6 +144,79 @@ namespace Handshake.Controllers
             return View();
         }
 
+        public async Task<IActionResult> ExternalLoginCallback(string returnUrl = null)
+        {
+            var info = await _signInManager.GetExternalLoginInfoAsync();
+            if (info == null)
+            {
+                return RedirectToAction(nameof(Login));
+            }
+            var signInResult = await _signInManager.ExternalLoginSignInAsync(info.LoginProvider, info.ProviderKey, isPersistent: false, bypassTwoFactor: true);
+            if (signInResult.Succeeded)
+            {
+                return RedirectToLocal(returnUrl);
+            }
+            ViewData["ReturnUrl"] = returnUrl;
+            ViewData["Provider"] = info.LoginProvider;
+            var email = info.Principal.FindFirstValue(ClaimTypes.Email);
+            return View("ExternalLogin", new ExternalLoginModel { Email = email });
+        }
+
+        public IActionResult ExternalLogin(string provider, string returnUrl = null)
+        {
+            var redirectUrl = Url.Action(nameof(ExternalLoginCallback), "Account", new { returnUrl });
+            Console.WriteLine("https://localhost:44321" + redirectUrl);
+            var properties = _signInManager.ConfigureExternalAuthenticationProperties(provider, "https://localhost:44351" + redirectUrl);
+            return Challenge(properties, provider);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ExternalLoginConfirmation(ExternalLoginModel model, string returnUrl = null)
+        {
+            if (!ModelState.IsValid)
+                return View(model);
+
+            var info = await _signInManager.GetExternalLoginInfoAsync();
+            if (info == null)
+                return View(nameof(Login));
+
+            var user = await _userManager.FindByEmailAsync(model.Email);
+            IdentityResult result;
+
+            if (user != null)
+            {
+                result = await _userManager.AddLoginAsync(user, info);
+                if (result.Succeeded)
+                {
+                    await _signInManager.SignInAsync(user, isPersistent: false);
+                    return RedirectToLocal(returnUrl);
+                }
+            }
+            else
+            {
+                model.Principal = info.Principal;
+                result = await _userManager.CreateAsync(user);
+                if (result.Succeeded)
+                {
+                    result = await _userManager.AddLoginAsync(user, info);
+                    if (result.Succeeded)
+                    {
+                        //TODO: Send an emal for the email confirmation and add a default role as in the Register action
+                        await _signInManager.SignInAsync(user, isPersistent: false);
+                        return RedirectToLocal(returnUrl);
+                    }
+                }
+            }
+
+            foreach (var error in result.Errors)
+            {
+                ModelState.TryAddModelError(error.Code, error.Description);
+            }
+
+            return View(nameof(ExternalLogin), model);
+        }
+
         #region Helpers
 
         private void AddErrors(IdentityResult result)
@@ -165,6 +240,6 @@ namespace Handshake.Controllers
         }
 
         #endregion
-        
+
     }
 }

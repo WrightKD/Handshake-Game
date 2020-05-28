@@ -37,6 +37,13 @@ namespace Handshake
 
             services.AddIdentity<ApplicationUser, ApplicationRole>()
                 .AddDefaultTokenProviders();
+            services.AddAuthentication()
+                .AddMicrosoftAccount(options =>
+                {
+                    options.AuthorizationEndpoint = "https://login.microsoftonline.com/common/oauth2/v2.0/authorize";
+                    options.ClientId = "df6071f9-6ee6-4d6a-afb7-3f7b627f8686";
+                    options.ClientSecret = "KSl5xml~._~dGYNCM30p00l0KtbtJsHQ~5";
+                });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
