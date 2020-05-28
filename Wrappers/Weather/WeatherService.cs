@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using RestSharp;
 using System;
 using System.Collections.Generic;
@@ -9,6 +10,12 @@ namespace Handshake.Wrappers.Weather
 {
     public class WeatherService
     {
+        static ILogger _logger;
+
+        public WeatherService(ILogger logger)
+        {
+            _logger = logger;
+        }
 
         //https://api.openweathermap.org/data/2.5/weather?lat=-26.1796856&lon=28.0509079&appid=1966bff07554d73e9faeb640c8d63bae
         private static T GetResource<T>(string description, Tuple<string, string>[] parameters = null) where T : new()
@@ -23,13 +30,16 @@ namespace Handshake.Wrappers.Weather
 
             var response = client.Execute<T>(request);
             var content = response.Content;
-
+            if (!response.IsSuccessful)
+            {
+                _logger.LogError($"Request {request.Method} {request.Resource} was unsuccessful");
+            }
             if (response.ErrorException != null)
                 throw new ApplicationException($"Unable to retrieve {description}.", response.ErrorException);
 
             return response.Data;
         }
-        
+
         public static WeatherStructure GetWeatherDetails(string latitude, string longitude)
         {
 

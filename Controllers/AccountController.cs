@@ -151,7 +151,6 @@ namespace Handshake.Controllers
         {
             _logger.LogInformation("External Login Callback");
             var info = await _signInManager.GetExternalLoginInfoAsync();
-            _logger.LogInformation(info.Principal.FindFirstValue(ClaimTypes.Email));
             if (info == null)
             {
                 return RedirectToAction(nameof(Login));
@@ -190,12 +189,13 @@ namespace Handshake.Controllers
 
             if (user != null)
             {
-                _logger.LogInformation(user.Id.ToString());
+                _logger.LogInformation("External user already exists... logging in");
                 await _signInManager.SignInAsync(user, isPersistent: false);
                 return RedirectToLocal(returnUrl);
             }
             else
             {
+                _logger.LogInformation("External user does not exist... creating new account");
                 model.Principal = info.Principal;
                 ApplicationUser newUser = new ApplicationUser();
                 newUser.Email = info.Principal.FindFirstValue(ClaimTypes.Email);
@@ -219,6 +219,7 @@ namespace Handshake.Controllers
 
         private IActionResult RedirectToLocal(string returnUrl)
         {
+            _logger.LogInformation("Redirecting to: " + returnUrl);
             if (Url.IsLocalUrl(returnUrl))
             {
                 return Redirect(returnUrl);
