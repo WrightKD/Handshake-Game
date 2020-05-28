@@ -1,0 +1,77 @@
+@model HandshakeGame.Models.User
+@{
+    ViewBag.Title = "Admin";
+
+}
+
+<h2>Update User Role</h2>
+
+
+<div>
+    @using (Html.BeginForm("DeleteUser", "Admin", FormMethod.Post))
+    {
+    
+            <label for="Username"><b></b></label>
+            <input type="text" placeholder="Enter Username" name="user" required><br>
+            <br>
+        <input type="submit" value="Delete" class="btn btn-primary" />
+    }
+    @if (ViewBag.Message != null)  
+    {  
+        <script type="text/javascript">  
+            window.onload = function () {  
+                alert("@ViewBag.Message");  
+            };  
+        </script>  
+    } 
+</div>
+<h2>Search for User</h2>
+<div>
+    @using (Html.BeginForm("DeleteUser", "Admin", FormMethod.Post))
+    {
+    
+            <label for="Username"><b></b></label>
+            <input type="text" placeholder="Enter Username" name="user" required><br>
+            <br>
+        <input type="submit" value="Delete" class="btn btn-primary" />
+    }
+    @if (ViewBag.Message != null)  
+    {  
+        <script type="text/javascript">  
+            window.onload = function () {  
+                alert("@ViewBag.Message");  
+            };  
+        </script>  
+    } 
+</div>
+
+<h2>Ban User</h2>
+<div>
+    @using (Html.BeginForm("DeleteUser", "Admin", FormMethod.Post))
+    {
+    
+            <label for="Username"><b></b></label>
+            <input type="text" placeholder="Enter Username" name="user" required><br>
+            <br>
+        <input type="submit" value="Delete" class="btn btn-primary" />
+    }
+    @if (ViewBag.Message != null)  
+    {  
+        <script type="text/javascript">  
+            window.onload = function () {  
+                alert("@ViewBag.Message");  
+            };  
+        </script>  
+    } 
+</div>
+
+<style>
+
+div {
+  border-radius: 8px;
+  background-color: #f2f2f2;
+  padding: 20px;
+}
+
+
+</style>
