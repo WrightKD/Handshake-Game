@@ -156,7 +156,7 @@ namespace Handshake.Controllers
             ViewData["ReturnUrl"] = returnUrl;
             ViewData["Provider"] = info.LoginProvider;
             var email = info.Principal.FindFirstValue(ClaimTypes.Email);
-            return View("ExternalLogin", new ExternalLoginModel { Email = email });
+            return await ExternalLoginConfirmation(new ExternalLoginModel { Email = email }, returnUrl);
         }
 
         public IActionResult ExternalLogin(string provider, string returnUrl = null)
@@ -180,8 +180,6 @@ namespace Handshake.Controllers
                 return View(nameof(Login));
 
             var user = await _userManager.FindByEmailAsync(model.Email);
-            Console.WriteLine("This is the user");
-            Console.WriteLine(user);
             IdentityResult result;
 
             if (user != null)
