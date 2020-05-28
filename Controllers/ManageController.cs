@@ -16,7 +16,6 @@ using WebApp.Models.ManageViewModels;
 
 namespace Handshake.Controllers
 {
-    [Authorize(Roles = "ADMIN")]
     public class ManageController : Controller
     {
         private readonly UserManager<ApplicationUser> _userManager;
