@@ -37,8 +37,8 @@
     <div class="w3-sidebar  UIText w3-dark-grey w3-bar-block w3-card w3-animate-right" style="display:none;right:0;" id="rightMenu">
         <button onclick="closeRightMenu()" class="w3-bar-item w3-button w3-large">Close &times;</button>
         <h5 class=" w3-padding UIText">INVENTORY</h5>
-        <a href="#" class="w3-bar-item w3-button" id="sanitizer" onclick="sanitise()">Sanitizer: x0</a>
-        <a href="#" class="w3-bar-item w3-button" id="mask" onclick="applyMask()">Mask: x0</a>
+        <a href="#" class="w3-bar-item w3-button" id="sanitizer" onclick="useSanitiser()">Sanitizer: x0</a>
+        <a href="#" class="w3-bar-item w3-button" id="mask" onclick="useMask()">Mask: x0</a>
         <a href="#" class="w3-bar-item w3-button" id="covidTest" onclick="test()">Covid-19 Test: x0</a>
         <h5 class=" w3-padding UIText">USER</h5>
         @if (User.IsInRole("ADMIN"))
@@ -273,10 +273,24 @@
             return data;
         }
 
-        const sanitise = async () => {
-            var response = await fetch('/Game/Sanitise');
+        const useSanitiser = async () => {
+            var response = await fetch('/Game/UseSanitiser');
             var data = await response.json();
             console.log("Infected: " + data.isInfected + "\nSanitiser: " + data.sanitiserCount);
+            return data;
+        }
+
+        const useMask = async () => {
+            var response = await fetch('/Game/UseMask');
+            var data = await response.json();
+           // console.log("Infected: " + data.isInfected + "\nSanitiser: " + data.sanitiserCount);
+            return data;
+        }
+
+        const useTest = async () => {
+            var response = await fetch('/Game/UseTest');
+            var data = await response.json();
+            // console.log("Infected: " + data.isInfected + "\nSanitiser: " + data.sanitiserCount);
             return data;
         }
 
@@ -297,9 +311,17 @@
         }
 
         const buyMask = async (shopId) => {
-            var response = await fetch('/Game/BuySanitiser?shopId=' + shopId);
+            var response = await fetch('/Game/BuyMask?shopId=' + shopId);
             var data = await response.json();
             console.log("BuyMask: ");
+            console.log(data);
+            return data;
+        }
+
+        const buyTest = async (shopId) => {
+            var response = await fetch('/Game/BuyTest?shopId=' + shopId);
+            var data = await response.json();
+            console.log("BuyTest: ");
             console.log(data);
             return data;
         }

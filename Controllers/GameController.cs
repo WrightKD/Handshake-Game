@@ -67,7 +67,7 @@ namespace Handshake.Controllers
             return new JsonResult(_gameService.player);
         }
 
-        public IActionResult Sanitise()
+        public IActionResult UseSanitiser()
         {
             _gameService.UseSanitiser();
             return new JsonResult(new Dictionary<string, string> 
