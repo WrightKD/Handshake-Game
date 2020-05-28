@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using Handshake.Wrappers;
+using Microsoft.Extensions.Logging;
 using RestSharp;
 using System;
 using System.Collections.Generic;

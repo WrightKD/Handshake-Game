@@ -13,6 +13,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using WebApp.Models;
 using Microsoft.AspNetCore.Identity;
+using Handshake.Wrappers.Mapbox;
 
 // For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -31,6 +32,7 @@ namespace HandshakeGame.Controllers
         // GET: /<controller>/
         public  IActionResult Index()
         {
+
             if(User.Identity.Name is null)
             {
                 return RedirectToAction("Login", "Account");
@@ -73,6 +75,10 @@ namespace HandshakeGame.Controllers
 
             var lat = "-26.1796856";
             var lon = "28.0509079";
+
+            var location = MapboxService.GetLocationDetails(lon, lat);
+
+            var province = MapboxService.GetProvince(location);
 
             var hospitals = PlaceService.GetPlaces("supermarket", "1500", lat, lon);
 

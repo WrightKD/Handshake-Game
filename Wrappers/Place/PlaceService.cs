@@ -55,9 +55,6 @@ namespace Handshake.Wrappers.Place
 
                 });
 
-            //Console.WriteLine($"The next ISS pass for {latitude} {longitude} is " +
-            //                  $"{DateTimeOffset.FromUnixTimeSeconds(nextPass.Risetime)} " +
-            //                  $"for {nextPass.Duration} seconds.");
         }
 
 
