@@ -23,6 +23,7 @@ namespace Handshake.GameLogic
         private double playerInfectionChance; //modified by weather/going to shop/work
         //npc vars
         private Random spawnRoll;
+        private Random infectionRoll;
         private double valForRandomDouble;
         private double nPCInfectedChance; //affected by regional stats
 
@@ -32,7 +33,8 @@ namespace Handshake.GameLogic
             handShakePoints = 1;
             NPCs = new List<NPC>();
             spawnRoll = new Random((int)DateTime.Now.Ticks);
-            valForRandomDouble = 0.005;
+            infectionRoll = new Random((int)DateTime.Now.Ticks);
+            valForRandomDouble = 0.01;
             //shop config
             shopResetTime = new DateTime();
             shopResetTime.AddMinutes(2);
@@ -44,7 +46,7 @@ namespace Handshake.GameLogic
             nPCInfectedChance = 0.5;
             playerInfectionChance = 0.5;
 
-            GenerateNPCs(20);
+            GenerateNPCs(50);
             TEMPGenerateShop(1);
         }
 
@@ -86,7 +88,6 @@ namespace Handshake.GameLogic
 
             if (NPCs.Find(x => x.ID == npcId).IsInfected)
             {
-                Random infectionRoll = new Random();
                 if (infectionRoll.NextDouble() < playerInfectionChance)
                     player.IsInfected = true;
             }
@@ -99,6 +100,11 @@ namespace Handshake.GameLogic
                 player.SanitiserCount--;
                 player.IsInfected = false;
             }
+        }
+
+        public void UseMask()
+        {
+
         }
 
         public object GetShopInventory(int shopId)
@@ -127,8 +133,6 @@ namespace Handshake.GameLogic
                 shops.Add(new Shop(i,sanitiserCount, sanitiserCost, maskCount, maskCost));
             }
         }
-
-
 
         private double GetRandomDouble()
         {

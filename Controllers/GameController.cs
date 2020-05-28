@@ -13,6 +13,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Handshake.Controllers
 {
+    //System.Diagnostics.Debug.WriteLine(_gameService.player.Score);
     public class GameController : Controller
     {
         GameService _gameService;
@@ -27,13 +28,6 @@ namespace Handshake.Controllers
             return View();
         }
 
-        public IActionResult ShakeHand(int npcId)
-        {
-            _gameService.ShakeHand(npcId);
-            //System.Diagnostics.Debug.WriteLine(_gameService.player.Score);
-             return new JsonResult(_gameService.player);
-        }
-
         public IActionResult GetNPCData()
         {
             return new JsonResult(_gameService.NPCs);
@@ -41,21 +35,26 @@ namespace Handshake.Controllers
 
         public IActionResult InitialiseNPCs(double latitude, double longitude)
         {
-            System.Diagnostics.Debug.WriteLine("ran");
-
             _gameService.RandomiseNPCLocations(latitude, longitude);
             return new JsonResult(_gameService.NPCs);
         }
+
+        public IActionResult ShakeHand(int npcId)
+        {
+            _gameService.ShakeHand(npcId);
+            return new JsonResult(_gameService.player);
+        }
+
         public IActionResult Sanitise()
         {
             _gameService.UseSanitiser();
-            //return new JsonResult(_gameService.player);
             return new JsonResult(new Dictionary<string, string> 
             {
                 {"sanitiserCount", _gameService.player.SanitiserCount.ToString() },
                 {"isInfected", _gameService.player.IsInfected.ToString() }
             }); 
         }
+
         public IActionResult GetShopInventory(int shopId)
         {
             return new JsonResult(_gameService.GetShopInventory(shopId));
@@ -70,7 +69,6 @@ namespace Handshake.Controllers
                 {"playerSanitiserCount",  _gameService.player.SanitiserCount.ToString()},
                 {"playerGold",  _gameService.player.Gold.ToString()}
             };
-           // var data2 = { { "shopSanitiserCount", shop.SanitiserCost.ToString() } };
             return new JsonResult(data);
         }
 
