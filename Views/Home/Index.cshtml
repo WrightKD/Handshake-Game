@@ -128,6 +128,13 @@
             document.getElementById("CovidBar").innerHTML = list;
         });
 
+        const getPlayerData = async () => {
+            var response = await fetch('/Game/GetPlayerData');
+            var data = await response.json();
+            console.log(data);
+            return data;
+        }
+
         const getNPCData = async () => {
             var response = await fetch('/Game/GetNPCData');
             var data = await response.json();
@@ -137,6 +144,13 @@
 
         const initialiseNPCs = async () => {
             var response = await fetch('/Game/InitialiseNPCs?latitude=-26.170458&longitude=28.0519267');
+            var data = await response.json();
+            //console.log(data);
+            return data;
+        }
+
+        const isNPCReady = async () => {
+            var response = await fetch('/Game/IsNPCReady?npcId=');
             var data = await response.json();
             //console.log(data);
             return data;
@@ -182,6 +196,7 @@
 
         function initGameData() {
             //inits all NPCs
+            getPlayerData();
             initialiseNPCs().then((data) => {
                 console.log(data[0].longitude);
                 map.addSource('npcs_source', {
@@ -227,6 +242,9 @@
                 // Center the map on the coordinates of any clicked symbol from the 'symbols' layer.
                 map.on('click', 'npcs_layer', function (e) {
                     //map.flyTo({ center: e.features[0].geometry.coordinates });
+                    isNPCReady().then((data) => {
+                        console.log(data);
+                    });
                     shakeHand().then((data) => {
                         console.log('score: ' + data.scoreCurrent + '\nlevel: ' + data.level + '\nisInfected: ' + data.isInfected);
                     });

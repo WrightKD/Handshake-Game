@@ -26,6 +26,7 @@ namespace Handshake.GameLogic
         private Random infectionRoll;
         private double valForRandomDouble;
         private double nPCInfectedChance; //affected by regional stats
+        private double nPCRefreshTime; 
 
     public GameService() 
         { 
@@ -45,6 +46,7 @@ namespace Handshake.GameLogic
             //infection
             nPCInfectedChance = 0.5;
             playerInfectionChance = 0.5;
+            nPCRefreshTime = 1;
 
             GenerateNPCs(50);
             TEMPGenerateShop(1);
@@ -76,6 +78,15 @@ namespace Handshake.GameLogic
             }
         }
 
+        public bool IsNPCReady(int npcId)
+        {
+            NPC npc = NPCs.Find(x => x.ID == npcId);
+            if ((DateTime.Now - npc.LastInteractedTime).TotalMinutes > nPCRefreshTime)
+                return true;
+            else
+                return false;
+        }
+
         public void ShakeHand(int npcId)
         {
             player.ScoreTotal += handShakePoints;
@@ -86,7 +97,9 @@ namespace Handshake.GameLogic
                 player.ScoreCurrent = player.ScoreCurrent - player.ScorePerLevel;
             }
 
-            if (NPCs.Find(x => x.ID == npcId).IsInfected)
+            NPC npc = NPCs.Find(x => x.ID == npcId);
+            npc.LastInteractedTime = DateTime.Now;
+            if (npc.IsInfected)
             {
                 if (infectionRoll.NextDouble() < playerInfectionChance)
                     player.IsInfected = true;

@@ -27,6 +27,10 @@ namespace Handshake.Controllers
         {
             return View();
         }
+        public IActionResult GetPlayerData()
+        {
+            return new JsonResult(_gameService.player);
+        }
 
         public IActionResult GetNPCData()
         {
@@ -37,6 +41,11 @@ namespace Handshake.Controllers
         {
             _gameService.RandomiseNPCLocations(latitude, longitude);
             return new JsonResult(_gameService.NPCs);
+        }
+
+        public bool IsNPCReady(int npcId)
+        {
+            return _gameService.IsNPCReady(npcId);
         }
 
         public IActionResult ShakeHand(int npcId)
