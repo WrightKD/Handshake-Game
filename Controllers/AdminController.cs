@@ -43,6 +43,19 @@ namespace Handshake.Controllers
             return View();
         }
 
+        public async Task<IActionResult> Details(int id)
+        {
+            if (id == null)
+            {
+                 return NotFound();
+            }
+
+            
+             ViewBag.Users = await _adminService.GetUserDetails(id);
+              _logger.LogInformation(" Admin is Displaying Details for User by Id ");
+             return View();
+        }
+
     }
 
 }
