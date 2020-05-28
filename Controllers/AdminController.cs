@@ -17,7 +17,8 @@ using Handshake.Services;
 namespace Handshake.Controllers
 {
     
-    public class AdminDashboardController : Controller
+    [Authorize(Roles = "ADMIN")]
+    public class AdminController : Controller
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
@@ -25,7 +26,7 @@ namespace Handshake.Controllers
         private readonly ILogger _logger;
         private AdminService  _adminService;
 
-        public AdminDashboardController(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager, RoleManager<ApplicationRole> roleManager, ILogger<AccountController> logger,AdminService  adminService)
+        public AdminController(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager, RoleManager<ApplicationRole> roleManager, ILogger<AccountController> logger,AdminService  adminService)
         {
             _userManager = userManager;
             _signInManager = signInManager;
@@ -34,12 +35,12 @@ namespace Handshake.Controllers
             _adminService = adminService;
         }
 
-        public async Task<IActionResult> ListUsers()
+        public async Task<IActionResult> Index()
         {
             ViewBag.Users = await _adminService.GetUsers();
             _logger.LogInformation(" Admin is Displaying All Users ");
 
-            return View("~/Views/Manage/AdminDashboard.cshtml");
+            return View();
         }
 
     }
