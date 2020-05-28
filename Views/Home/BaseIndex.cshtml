@@ -37,6 +37,10 @@
         <a href="#" class="w3-bar-item w3-button">Sanitizer: 10 Gold</a>
         <a href="#" class="w3-bar-item w3-button">Mask: 50 Gold</a>
         <h5 class=" w3-padding UIText">USER</h5>
+        @if (User.IsInRole("ADMIN"))
+        {
+        <a href="#" class="w3-bar-item w3-button">Admin dashboard</a>
+        }
         <a asp-controller="Account" asp-action="Logout" class="w3-bar-item w3-button">Logout</a>
     </div>
     <div id="statsBar" class="w3-row w3-dark-grey w3-center UIText ">

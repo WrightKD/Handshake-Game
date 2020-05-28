@@ -1,7 +1,6 @@
-using System;
-using System.Threading.Tasks;
-using Handshake.GameLogic;
 using Handshake.Database;
+using Handshake.Services;
+using Handshake.GameLogic;
 using HandshakeGame.Database;
 using HandshakeGame.Database.Models;
 using HandshakeGame.Models;
@@ -11,6 +10,8 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using System;
+using System.Threading.Tasks;
 using WebApp.Models;
 
 namespace Handshake
@@ -32,10 +33,13 @@ namespace Handshake
             services.AddSingleton<IDBConnection, DBConnection>();
             services.AddSingleton<Users>();
             services.AddSingleton<GameService>();
+
             services.AddSingleton<IDBModel<User, UserCreate>, Users>();
+            services.AddSingleton<AdminService>();
 
             services.AddTransient<IUserStore<ApplicationUser>, UserStore>();
             services.AddTransient<IRoleStore<ApplicationRole>, RoleStore>();
+            
 
             services.AddIdentity<ApplicationUser, ApplicationRole>()
                 .AddDefaultTokenProviders();
