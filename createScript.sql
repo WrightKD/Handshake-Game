@@ -72,3 +72,17 @@ PRIMARY KEY CLUSTERED
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 GO
+
+CREATE TABLE [dbo].[ApplicationPlayer](
+	[Id] [int] NOT NULL,
+	[ScoreCurrent] [int] NOT NULL,
+	[ScoreTotal] [int] NOT NULL,
+	[Level] [int] NULL,
+	[ScorePerLevel] [int] NULL,
+	[SanitiserCount] [int] NOT NULL,
+	[Gold] [int] NULL,
+	[MaskCount] [int] NULL,
+	[IsContaminated] [bit] NOT NULL,
+	[IsInfected] [bit] NOT NULL,
+
+) 
