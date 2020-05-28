@@ -187,6 +187,7 @@ namespace Handshake.Controllers
 
             if (user != null)
             {
+                _logger.LogInformation(user.Id.ToString());
                 await _signInManager.SignInAsync(user, isPersistent: false);
                 return RedirectToLocal(returnUrl);
             }
@@ -197,6 +198,7 @@ namespace Handshake.Controllers
                 newUser.Email = info.Principal.FindFirstValue(ClaimTypes.Email);
                 newUser.UserName = info.Principal.FindFirstValue(ClaimTypes.Name).Replace(" ", "");
                 result = await _userManager.CreateAsync(newUser);
+                await _userManager.AddToRoleAsync(newUser, "Player");
                 await _signInManager.SignInAsync(newUser, isPersistent: false);
                 return RedirectToLocal(returnUrl);
             }
