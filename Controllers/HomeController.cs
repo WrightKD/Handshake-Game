@@ -1,9 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Data.SqlClient;
 using Handshake.Wrappers.CovidStats;
 using Handshake.Wrappers.Place;
 using Handshake.Wrappers.Weather;
+using System.Diagnostics;
 using HandshakeGame.Database;
 using HandshakeGame.Database.Models;
 using HandshakeGame.GeoJson;
@@ -11,6 +11,7 @@ using HandshakeGame.Models;
 using HandshakeGame.Wrappers.ISS;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using WebApp.Models;
 
 // For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -18,9 +19,9 @@ namespace HandshakeGame.Controllers
 {
     public class HomeController : Controller
     {
-        Users users;
+        IDBModel<User, UserCreate> users;
         ILogger logger;
-        public HomeController(ILogger<HomeController> logger, Users users)
+        public HomeController(ILogger<HomeController> logger, IDBModel<User, UserCreate> users)
         {
             this.users = users;
             this.logger = logger;
@@ -95,6 +96,25 @@ namespace HandshakeGame.Controllers
             var geolocation = Converter.GetGeoJSON(coordinates, properties);
 
             return new JsonResult(geolocation);
+        }
+
+        public IActionResult About()
+        {
+            ViewData["Message"] = "Your application description page.";
+
+            return View();
+        }
+
+        public IActionResult Contact()
+        {
+            ViewData["Message"] = "Your contact page.";
+
+            return View();
+        }
+
+        public IActionResult Error()
+        {
+            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
     }
 }

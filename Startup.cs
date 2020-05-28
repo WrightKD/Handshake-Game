@@ -3,20 +3,26 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Handshake.GameLogic;
+using Handshake.Database;
 using HandshakeGame.Database;
 using HandshakeGame.Database.Models;
 using HandshakeGame.Models;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
+using System;
+using System.Threading.Tasks;
+using WebApp.Models;
 
 namespace Handshake
 {
     public class Startup
     {
+
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
@@ -31,11 +37,26 @@ namespace Handshake
             services.AddSingleton<IDBConnection, DBConnection>();
             services.AddSingleton<Users>();
             services.AddSingleton<GameService>();
+            services.AddSingleton<IDBModel<User, UserCreate>, Users>();
+
+            services.AddTransient<IUserStore<ApplicationUser>, UserStore>();
+            services.AddTransient<IRoleStore<ApplicationRole>, RoleStore>();
+
+            services.AddIdentity<ApplicationUser, ApplicationRole>()
+                .AddDefaultTokenProviders();
+            services.AddAuthentication()
+                .AddMicrosoftAccount(options =>
+                {
+                    options.AuthorizationEndpoint = "https://login.microsoftonline.com/common/oauth2/v2.0/authorize";
+                    options.ClientId = "df6071f9-6ee6-4d6a-afb7-3f7b627f8686";
+                    options.ClientSecret = "KSl5xml~._~dGYNCM30p00l0KtbtJsHQ~5";
+                });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IServiceProvider serviceProvider)
         {
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
@@ -51,6 +72,7 @@ namespace Handshake
 
             app.UseRouting();
 
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
@@ -59,6 +81,29 @@ namespace Handshake
                     name: "default",
                     pattern: "{controller=Home}/{action=Index}/{id?}");
             });
+
+            CreateRoles(serviceProvider).Wait();
+
+        }
+
+        private async Task CreateRoles(IServiceProvider serviceProvider)
+        {
+          
+            var RoleManager = serviceProvider.GetRequiredService<RoleManager<ApplicationRole>>();
+          
+            string[] roleNames = { "Admin", "Player" };
+
+            IdentityResult roleResult;
+
+            foreach (var roleName in roleNames)
+            {
+                var roleExist = await RoleManager.RoleExistsAsync(roleName);
+                if (!roleExist)
+                {
+                    roleResult = await RoleManager.CreateAsync(new ApplicationRole { Name = roleName });
+                }
+            }
+
         }
     }
 }
