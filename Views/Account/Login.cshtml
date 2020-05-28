@@ -511,18 +511,20 @@
         else
         {
             <div class="w3-col s4 w3-center">
-                <form asp-controller="Account" asp-action="ExternalLogin" asp-route-returnurl="@ViewData["ReturnUrl"]" method="post">
+         
                     @foreach (var provider in loginProviders)
                     {
+
+                       
                         @Html.ActionLink(
-							provider.Name,
+							provider.Name ?? "Microsoft",
 							"ExternalLogin",
 							"Account",
 							new { provider=provider.Name, returnUrl=""},
 							new { @class = "w3-wide loginbtn w3-padding-large w3-large w3-button w3-round w3-dark-gray" }
 						)
                     }
-                </form>
+              
             </div>
         }
     }

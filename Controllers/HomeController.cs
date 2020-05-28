@@ -12,6 +12,7 @@ using HandshakeGame.Wrappers.ISS;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using WebApp.Models;
+using Microsoft.AspNetCore.Identity;
 
 // For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -19,17 +20,22 @@ namespace HandshakeGame.Controllers
 {
     public class HomeController : Controller
     {
-        IDBModel<User, UserCreate> users;
+        
         ILogger logger;
-        public HomeController(ILogger<HomeController> logger, IDBModel<User, UserCreate> users)
+        public HomeController(ILogger<HomeController> logger)
         {
-            this.users = users;
+       
             this.logger = logger;
         }
 
         // GET: /<controller>/
-        public IActionResult Index()
+        public  IActionResult Index()
         {
+            if(User.Identity.Name is null)
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
             return View();
         }
 

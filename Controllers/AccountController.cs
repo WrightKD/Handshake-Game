@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Handshake.Database;
@@ -15,7 +15,7 @@ using WebApp.Models.AccountViewModels;
 
 namespace Handshake.Controllers
 {
-    [Authorize]
+  
     public class AccountController : Controller
     {
         private readonly UserManager<ApplicationUser> _userManager;
@@ -136,7 +136,7 @@ namespace Handshake.Controllers
         {
             await _signInManager.SignOutAsync();
             _logger.LogInformation("User logged out.");
-            return RedirectToAction(nameof(HomeController.Index), "Home");
+            return RedirectToAction("Login", "Account");
         }
 
 
@@ -146,6 +146,7 @@ namespace Handshake.Controllers
             return View();
         }
 
+        [AllowAnonymous]
         public async Task<IActionResult> ExternalLoginCallback(string returnUrl = null)
         {
             _logger.LogInformation("External Login Callback");
@@ -161,6 +162,7 @@ namespace Handshake.Controllers
             return await ExternalLoginConfirmation(new ExternalLoginModel { Email = email }, returnUrl);
         }
 
+        [AllowAnonymous]
         public IActionResult ExternalLogin(string provider, string returnUrl = null)
         {
             _logger.LogInformation("External login started");
@@ -172,6 +174,7 @@ namespace Handshake.Controllers
         }
 
         [HttpPost]
+        [AllowAnonymous]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ExternalLoginConfirmation(ExternalLoginModel model, string returnUrl = null)
         {
