@@ -1,40 +1,36 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
+﻿
+@{
+    ViewData["Title"] = "Index";
 }
 
-
-
-<partial name="_LoginPartial"/>
-
-
-@*<body>
-    <div class="w3-sidebar  UIText w3-dark-grey w3-bar-block w3-card w3-animate-right" style="display:none;right:0;" id="rightMenu">
-        <button onclick="closeRightMenu()" class="w3-bar-item w3-button w3-large">Close &times;</button>
-        <h5 class=" w3-padding UIText">SHOP</h5>
-        <a href="#" class="w3-bar-item w3-button" onclick="sanitise()">Sanitizer: 10 Gold</a>
-        <a href="#" class="w3-bar-item w3-button" onclick="getShopData()">Mask: 50 Gold</a>
-        <h5 class=" w3-padding UIText">USER</h5>
-        <a href="#" class="w3-bar-item w3-button" onclick="buySanitiser()">Logout</a>
-    </div>
-    <div id="statsBar" class="w3-row UIText ">
-        <div class="w3-col m2 w3-dark-grey w3-center"><p>XP: 100</p></div>
-        <div class="w3-col m2 w3-dark-grey w3-center"><p>Body: Healthy</p></div>
-        <div class="w3-col m2 w3-dark-grey w3-center"><p>Hands: Clean</p></div>
-        <div class="w3-col m2 w3-dark-grey w3-center"><p>Sanitizer: 10x</p></div>
-        <div class="w3-col m2 w3-dark-grey w3-center"><p>Gold: 100</p></div>
-        <div class="w3-col m2 w3-dark-grey w3-center">
-            <button class="w3-button w3-xlarge" onclick="openRightMenu()">&#9776;</button>
+    <body>
+        <div class="w3-sidebar  UIText w3-dark-grey w3-bar-block w3-card w3-animate-right" style="display:none;right:0;" id="rightMenu">
+            <button onclick="closeRightMenu()" class="w3-bar-item w3-button w3-large">Close &times;</button>
+            <h5 class=" w3-padding UIText">SHOP</h5>
+            <a href="#" class="w3-bar-item w3-button" onclick="sanitise()">Sanitizer: 10 Gold</a>
+            <a href="#" class="w3-bar-item w3-button" onclick="getShopData()">Mask: 50 Gold</a>
+            <h5 class=" w3-padding UIText">USER</h5>
+            <a href="#" class="w3-bar-item w3-button" onclick="buySanitiser()">Logout</a>
         </div>
-    </div>
-    <div id='map'></div>
-    <div id="CovidBar" class="w3-row UIText w3-dark-grey" style="position: relative;">
-  
-    </div>
-    <script src='https://api.mapbox.com/mapbox-gl-js/v1.8.1/mapbox-gl.js'></script>
+        <div id="statsBar" class="w3-row UIText ">
+            <div class="w3-col m2 w3-dark-grey w3-center"><p>XP: 100</p></div>
+            <div class="w3-col m2 w3-dark-grey w3-center"><p>Body: Healthy</p></div>
+            <div class="w3-col m2 w3-dark-grey w3-center"><p>Hands: Clean</p></div>
+            <div class="w3-col m2 w3-dark-grey w3-center"><p>Sanitizer: 10x</p></div>
+            <div class="w3-col m2 w3-dark-grey w3-center"><p>Gold: 100</p></div>
+            <div class="w3-col m2 w3-dark-grey w3-center">
+                <button class="w3-button w3-xlarge" onclick="openRightMenu()">&#9776;</button>
+            </div>
+        </div>
+        <div id='map'></div>
+        <div id="CovidBar" class="w3-row UIText w3-dark-grey" style="position: relative;">
 
-    <script>
+        </div>
+        <script src='https://api.mapbox.com/mapbox-gl-js/v1.8.1/mapbox-gl.js'></script>
+
+        <script>
         var playerLat = -26.170458
-        var playerLong = 28.0519267 
+        var playerLong = 28.0519267
         mapboxgl.accessToken = 'pk.eyJ1Ijoid3JpZ2h0a2QiLCJhIjoiY2thN3duNW42MDR5bjJ3c2JibGZjdTc5aSJ9.WfzsXOP8KI0_PVo9su3ubw';
 
         var map = new mapboxgl.Map({
@@ -270,8 +266,7 @@
             });
         };
 
-    </script>
+        </script>
 
-</body>*@
-
+    </body>
 

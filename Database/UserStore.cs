@@ -1,4 +1,6 @@
 ﻿using Dapper;
+using Handshake.GameLogic;
+using Handshake.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using System.Collections.Generic;
@@ -13,9 +15,11 @@ namespace Handshake.Database
         IUserTwoFactorStore<ApplicationUser>, IUserPasswordStore<ApplicationUser>, IUserRoleStore<ApplicationUser>, IUserLoginStore<ApplicationUser>
     {
         private readonly string _connectionString;
+        private readonly GameService _gameService;
 
-        public UserStore(IConfiguration configuration)
+        public UserStore(IConfiguration configuration, GameService gameService)
         {
+            _gameService = gameService;
             _connectionString = configuration.GetConnectionString("DefaultConnection");
         }
         public async Task<IdentityResult> CreateAsync(ApplicationUser user, CancellationToken cancellationToken)
@@ -25,12 +29,26 @@ namespace Handshake.Database
             using (var connection = new SqlConnection(_connectionString))
             {
                 await connection.OpenAsync(cancellationToken);
+
                 user.Id = await connection.QuerySingleAsync<int>($@"INSERT INTO [ApplicationUser] ([UserName], [NormalizedUserName], [Email],
                 [NormalizedEmail], [EmailConfirmed], [PasswordHash], [PhoneNumber], [PhoneNumberConfirmed], [TwoFactorEnabled])
                 VALUES (@{nameof(ApplicationUser.UserName)}, @{nameof(ApplicationUser.NormalizedUserName)}, @{nameof(ApplicationUser.Email)},
                 @{nameof(ApplicationUser.NormalizedEmail)}, @{nameof(ApplicationUser.EmailConfirmed)}, @{nameof(ApplicationUser.PasswordHash)},
                 @{nameof(ApplicationUser.PhoneNumber)}, @{nameof(ApplicationUser.PhoneNumberConfirmed)}, @{nameof(ApplicationUser.TwoFactorEnabled)});
                 SELECT CAST(SCOPE_IDENTITY() as int)", user);
+
+                Player player = _gameService.GetDefaultPlayer();
+                player.Id = user.Id;
+
+                var Infected = player.IsInfected ? 1 : 0;
+                var Contaminated = player.IsContaminated ? 1 : 0;
+
+                await connection.QuerySingleOrDefaultAsync($@"INSERT INTO [ApplicationPlayer] ([Id], [ScoreCurrent], [ScoreTotal], [Level],
+                [ScorePerLevel], [SanitiserCount], [Gold], [MaskCount], [IsContaminated], [IsInfected])
+                VALUES ({player.Id},{player.ScoreCurrent}, {player.ScoreTotal}, {player.Level},
+                {player.ScorePerLevel}, {player.SanitiserCount}, {player.Gold},
+                {player.MaskCount}, {Contaminated}, {Infected});");
+
             }
 
             return IdentityResult.Success;
@@ -283,6 +301,7 @@ namespace Handshake.Database
                 await UpdateAsync(user, cancellationToken);
         }
         #endregion
+
 
         public Task AddLoginAsync(ApplicationUser user, UserLoginInfo login, CancellationToken cancellationToken)
         {

@@ -1,15 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.SqlClient;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
+using Dapper;
 using Handshake.Models;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Configuration;
+using WebApp.Models;
 
 namespace Handshake.GameLogic
 {
     public class GameService
     {
-        public Player player;
+        
         public List<NPC> NPCs;
         public List<Shop> shops;
         //shop vars
@@ -25,11 +30,17 @@ namespace Handshake.GameLogic
         private Random spawnRoll;
         private double valForRandomDouble;
         private double nPCInfectedChance; //affected by regional stats
+        
 
-    public GameService() 
-        { 
-            player = new Player();
-            handShakePoints = 1;
+        public Player player { get; set; }
+        public IConfiguration Configuration { get; set; }
+
+        public GameService(IConfiguration configuration) 
+        {
+
+            Configuration = configuration;
+
+            
             NPCs = new List<NPC>();
             spawnRoll = new Random((int)DateTime.Now.Ticks);
             valForRandomDouble = 0.005;
@@ -48,14 +59,32 @@ namespace Handshake.GameLogic
             TEMPGenerateShop(1);
         }
 
-        public void LoadPlayerData()
+        public Player GetDefaultPlayer()
         {
-            //gets data from DB
+            return new Player
+            {
+                ScoreCurrent = 0,
+                ScoreTotal = 0,
+                ScorePerLevel = 10,
+                Level = 1,
+                IsInfected = false,
+                IsContaminated = false,
+                SanitiserCount = 2,
+                MaskCount = 0,
+                Gold = 100
+            };
         }
 
-        public void SavePlayerData()
+        public async Task LoadPlayerDataAsync(int userId)
         {
+            //make it static ?
+            player = await GetPlayerAsync(userId);
+        }
 
+        public async Task SavePlayerData()
+        {
+            player.Gold = 10000000;
+            await UpdatePlayerAsync(player);
         }
         private void GenerateNPCs(int numberToSpawn)
         {
@@ -133,6 +162,41 @@ namespace Handshake.GameLogic
         private double GetRandomDouble()
         {
             return spawnRoll.NextDouble() * (2 * valForRandomDouble) - valForRandomDouble;
+        }
+
+        public async Task<Player> GetPlayerAsync(int userId)
+        {
+
+            using (var connection = new SqlConnection(Configuration.GetConnectionString("DefaultConnection")))
+            {
+                await connection.OpenAsync();
+
+                return await connection.QuerySingleOrDefaultAsync<Player>($@"SELECT * FROM [ApplicationPlayer]
+                WHERE [Id] = @{nameof(userId)}", new { userId });
+            }
+        }
+
+        public async Task<IdentityResult> UpdatePlayerAsync(Player player)
+        {
+
+            using (var connection = new SqlConnection(Configuration.GetConnectionString("DefaultConnection")))
+            {
+                await connection.OpenAsync();
+
+                await connection.ExecuteAsync($@"UPDATE [ApplicationPlayer] SET
+                [ScoreCurrent] = @{nameof(Player.ScoreCurrent)},
+                [ScoreTotal] = @{nameof(Player.ScoreTotal)},
+                [Level] = @{nameof(Player.Level)},
+                [ScorePerLevel] = @{nameof(Player.ScorePerLevel)},
+                [SanitiserCount] = @{nameof(Player.SanitiserCount)},
+                [Gold] = @{nameof(Player.Gold)},
+                [MaskCount] = @{nameof(Player.MaskCount)},
+                [IsContaminated] = @{nameof(Player.IsContaminated)},
+                [IsInfected] = @{nameof(Player.IsInfected)}
+                WHERE [Id] = Id", player);
+            }
+
+            return IdentityResult.Success;
         }
     }
 }

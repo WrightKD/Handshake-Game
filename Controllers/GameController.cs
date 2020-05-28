@@ -1,29 +1,43 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Handshake.Database;
 using Handshake.GameLogic;
 using Handshake.Models;
 using Handshake.Wrappers.Place;
 using Handshake.Wrappers.Weather;
 using HandshakeGame.GeoJson;
 using Microsoft.AspNetCore.Authentication.OAuth.Claims;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using WebApp.Models;
 
 namespace Handshake.Controllers
 {
     public class GameController : Controller
     {
-        GameService _gameService;
+        private UserManager<ApplicationUser> _userManager;
+        private GameService _gameService;
 
-        public GameController( GameService gS)
+        public GameController( GameService gS, UserManager<ApplicationUser> userManager)
         {
             _gameService = gS;
+            _userManager = userManager;
+
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
+            var user = await _userManager.FindByNameAsync(User.Identity.Name);
+
+            await _gameService.LoadPlayerDataAsync(user.Id);
+
+            await _gameService.SavePlayerData();
+
+            //_gameService.player = await _gameService.GetPlayerAsync($"{user.Id}");
+
             return View();
         }
 
