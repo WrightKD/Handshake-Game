@@ -11,6 +11,9 @@
     <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
     <link href='https://api.mapbox.com/mapbox-gl-js/v1.8.1/mapbox-gl.css' rel='stylesheet' />
     <link rel="stylesheet" href="css/w3.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+    <script src='https://kit.fontawesome.com/a076d05399.js'></script>
     <style>
         body {
             margin: 0;
@@ -23,7 +26,8 @@
             bottom: 50px;
             width: 100%;
         }
-        .UIText{
+
+        .UIText {
             font-family: "Great Vibes", cursive;
         }
     </style>
@@ -32,31 +36,134 @@
 <body>
     <div class="w3-sidebar  UIText w3-dark-grey w3-bar-block w3-card w3-animate-right" style="display:none;right:0;" id="rightMenu">
         <button onclick="closeRightMenu()" class="w3-bar-item w3-button w3-large">Close &times;</button>
-        <h5 class=" w3-padding UIText">SHOP</h5>
-        <a href="#" class="w3-bar-item w3-button" onclick="sanitise()">Sanitizer: 10 Gold</a>
-        <a href="#" class="w3-bar-item w3-button" onclick="getShopInventory()">Mask: 50 Gold</a>
+        <h5 class=" w3-padding UIText">INVENTORY</h5>
+        <a href="#" class="w3-bar-item w3-button" id="sanitizer" onclick="sanitise()">Sanitizer: x0</a>
+        <a href="#" class="w3-bar-item w3-button" id="mask" onclick="applyMask()">Mask: x0</a>
+        <a href="#" class="w3-bar-item w3-button" id="covidTest" onclick="test()">Covid-19 Test: x0</a>
         <h5 class=" w3-padding UIText">USER</h5>
+        @if (User.IsInRole("ADMIN"))
+        {
+            <a asp-controller="Admin" asp-action="Index" class="w3-bar-item w3-button">Admin dashboard</a>
+        }
         <a href="#" class="w3-bar-item w3-button" onclick="buySanitiser()">Logout</a>
     </div>
     <div id="statsBar" class="w3-row UIText ">
-        <div class="w3-col m2 w3-dark-grey w3-center"><p>XP: 100</p></div>
-        <div class="w3-col m2 w3-dark-grey w3-center"><p>Body: Healthy</p></div>
-        <div class="w3-col m2 w3-dark-grey w3-center"><p>Hands: Clean</p></div>
-        <div class="w3-col m2 w3-dark-grey w3-center"><p>Sanitizer: 10x</p></div>
-        <div class="w3-col m2 w3-dark-grey w3-center"><p>Gold: 100</p></div>
-        <div class="w3-col m2 w3-dark-grey w3-center">
-            <button class="w3-button w3-xlarge" onclick="openRightMenu()">&#9776;</button>
+        <div class="w3-col m2 w3-dark-grey w3-center" style="width:20%"><p id="playerName">Marcelle</p></div>
+        <div class="w3-col m2 w3-dark-grey w3-center" style="width:20%"><p id="gold">Gold: 0</p></div>
+        <div class="w3-col m2 w3-dark-grey w3-center" style="width:20%"><p id="level">Level: 0</p></div>
+        <div class="w3-col m2 w3-dark-grey w3-center" style="width:20%"><p id="levelScore">Level Score: 0/0</p></div>
+        <div class="w3-col m2 w3-dark-grey" style="width:20%">
+            <button class="w3-button w3-xlarge w3-right" onclick="openRightMenu()">&#9776;</button>
         </div>
     </div>
     <div id='map'></div>
     <div id="CovidBar" class="w3-row UIText w3-dark-grey" style="position: relative;">
-  
+
+    </div>
+
+    <!--Player info div-->
+    <div id="playerInfo" class="w3-modal">
+        <div class="w3-modal-content w3-card-4 w3-animate-zoom" style="max-width:600px">
+
+            <div class="w3-center">
+                <br>
+                <span onclick="document.getElementById('playerInfo').style.display='none'" class="w3-button w3-xlarge w3-transparent w3-display-topright" title="Close Modal">×</span>
+                <img src="https://medgoldresources.com/wp-content/uploads/2018/02/avatar-placeholder.gif" alt="Avatar" style="width:30%" class="w3-circle w3-margin-top">
+            </div>
+
+            <div class="w3-container">
+                <div class="w3-section">
+                    <label class="UIText"><b>Username</b></label>
+                    <div class="w3-input w3-border w3-margin-bottom UIText"><b id="Username"></b></div>
+                    <label class="UIText"><b>Traits</b></label>
+                    <div class="w3-input w3-border UIText"><b id="Traits"></b></div>
+                    <button class="w3-button w3-section w3-padding" id="handShake" data-id="0" onclick="shakeHand($(this).data('id'))" title="Shake players hand" style="font-size:24px"><i class="fa fa-handshake-o"></i></button>
+                    <button class="w3-button w3-section w3-padding" id="highFive" onclick="highFive($(this).data('id'))" title="High five player" style='font-size:24px; display:none'><i class='fas fa-praying-hands'></i></button>
+                </div>
+            </div>
+
+            <div class="w3-container w3-border-top w3-padding-16 w3-light-grey">
+                <button onclick="document.getElementById('playerInfo').style.display='none'" type="button" class="w3-button w3-red UIText">Leave</button>
+            </div>
+
+        </div>
+    </div>
+
+    <!--Shop grid -->
+
+    <div id="shopModal" class="w3-modal">
+        <div class="w3-modal-content w3-card-4 w3-animate-zoom" style="max-width:600px">
+
+            <div class="w3-center">
+                <br>
+                <span onclick="document.getElementById('shopModal').style.display='none'"
+                      class="w3-button w3-xlarge w3-transparent w3-display-topright  UIText" title="Close Modal">×</span>
+                <h1 id="shop" class=" UIText" data-id="10">SHOP</h1>
+                <i class='fas fa-shopping-basket w3-circle w3-margin-top' style='font-size:200px;color:grey'></i>
+            </div>
+            <div class="w3-container">
+                <div class="w3-section">
+                    <div class="w3-row-padding w3-border w3-center">
+                        <div class="  UIText w3-col s4">
+                            <h4 class=" UIText">Product</h4>
+                        </div>
+                        <div class="w3-col s4">
+                            <h4 class=" UIText">Quantity</h4>
+                        </div>
+                        <div class="w3-col s4">
+                            <h4 class=" UIText">Purchase</h4>
+                        </div>
+                    </div>
+                    <div class="w3-row w3-padding w3-border w3-center">
+                        <div class="  w3-col s4">
+                            <i class="fas fa-pump-medical" title="Sanatizer" style='font-size:100px;color:grey'></i>
+                        </div>
+                        <div class="w3-col w3-margin-top s4">
+                            <h1 class=" UIText">x10</h1>
+                        </div>
+                        <div class="w3-col s4">
+                            <button class=" w3-button w3-block w3-green" onclick="buySanitiser($('#shop').data('id'))"><h1 class=" UIText">Buy</h1></button>
+                        </div>
+                    </div>
+                    <div class="w3-row w3-padding w3-border w3-center">
+                        <div class="  w3-col s4">
+                            <i class="fas fa-head-side-mask" title="Mask" style='font-size:100px;color:grey'></i>
+                        </div>
+                        <div class="w3-col w3-margin-top s4">
+                            <h1 class=" UIText">x10</h1>
+                        </div>
+                        <div class="w3-col s4">
+                            <button class=" w3-button w3-block w3-green" onclick="buyMask($('#shop').data('id'))"><h1 class=" UIText">Buy</h1></button>
+                        </div>
+                    </div>
+                    <div class="w3-row w3-padding w3-border w3-center">
+                        <div class="  w3-col s4">
+                            <i class="fas fa-vials" title="Covid-19 Test Kit" style='font-size:100px;color:grey'></i>
+                        </div>
+                        <div class="w3-col w3-margin-top s4">
+                            <h1 class=" UIText">x10</h1>
+                        </div>
+                        <div class="w3-col s4">
+                            <button class=" w3-button w3-block w3-green" onclick="buyTest($('#shop').data('id'))"><h1 class=" UIText">Buy</h1></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="w3-container w3-border-top w3-padding-16 w3-light-grey">
+                <button onclick="document.getElementById('shopModal').style.display='none'" type="button"
+                        class="w3-button w3-red  UIText">
+                    Leave
+                </button>
+            </div>
+
+        </div>
     </div>
     <script src='https://api.mapbox.com/mapbox-gl-js/v1.8.1/mapbox-gl.js'></script>
 
     <script>
         var playerLat = -26.170458
-        var playerLong = 28.0519267 
+        var playerLong = 28.0519267
         var gameZoom = 16
         mapboxgl.accessToken = 'pk.eyJ1Ijoid3JpZ2h0a2QiLCJhIjoiY2thN3duNW42MDR5bjJ3c2JibGZjdTc5aSJ9.WfzsXOP8KI0_PVo9su3ubw';
 
@@ -66,7 +173,7 @@
             zoom: gameZoom,
             minZoom: gameZoom,
             maxZoom: gameZoom,
-            center: [ playerLong, playerLat,]
+            center: [playerLong, playerLat,]
         });
 
         var nav = new mapboxgl.NavigationControl();
@@ -123,7 +230,7 @@
             console.log(stats)
             var list = ''
             for (const [key, value] of Object.entries(stats)) {
-                list += '<div style="width: 10%" class="w3-col l2 w3-dark-grey w3-center"><p>' + key.toUpperCase() + ': ' + value[0].cases[value[0].cases.length - 1] +'</p></div>'
+                list += '<div style="width: 10%" class="w3-col l2 w3-dark-grey w3-center"><p>' + key.toUpperCase() + ': ' + value[0].cases[value[0].cases.length - 1] + '</p></div>'
             }
             document.getElementById("CovidBar").innerHTML = list;
         });
@@ -156,7 +263,8 @@
             return data;
         }
 
-        const shakeHand = async () => {
+        const shakeHand = async (npcId) => {
+            console.log("NPC ID: " + npcId);
             var response = await fetch('/Game/ShakeHand');
             var data = await response.json();
             //console.log(data);
@@ -196,7 +304,7 @@
 
         function initGameData() {
             //inits all NPCs
-            getPlayerData();
+            UpdateUI();
             initialiseNPCs().then((data) => {
                 console.log(data[0].longitude);
                 map.addSource('npcs_source', {
@@ -242,35 +350,60 @@
                 // Center the map on the coordinates of any clicked symbol from the 'symbols' layer.
                 map.on('click', 'npcs_layer', function (e) {
                     //map.flyTo({ center: e.features[0].geometry.coordinates });
+                    console.log($("#level").html().split(" ")[1])
+                    $("#Username").html(e.features[0].properties.description.split(/<\/?[^>]+(>|$)/g)[2])
+                    $("#Traits").html(e.features[0].properties.description.split(/<\/?[^>]+(>|$)/g)[6])
+                    if ($("#level").html().split(" ")[1] >= 10) {
+                        $("#highFive").show()
+                    }
+                    $("#handShake").attr("data-id", e.features[0].id)
+                    //comment line below out when isNpcReady is working 
+                    document.getElementById('playerInfo').style.display = 'block'
                     isNPCReady().then((data) => {
-                        console.log(data);
+                        if (data) {
+                            //document.getElementById('playerInfo').style.display = 'block'
+                        }
+                        else {
+                            alert("player needs to rest. Come back later")
+                        }
                     });
-                    shakeHand().then((data) => {
-                        console.log('score: ' + data.scoreCurrent + '\nlevel: ' + data.level + '\nisInfected: ' + data.isInfected);
-                    });
+                    
                 });
 
                 // Change the cursor to a pointer when the it enters a feature in the 'symbols' layer.
                 map.on('mouseenter', 'npcs_layer', function (e) {
                     map.getCanvas().style.cursor = 'pointer';
 
-                    var coordinates = e.features[0].geometry.coordinates.slice();
-                    var description = e.features[0].properties.description;
+                    //var coordinates = e.features[0].geometry.coordinates.slice();
+                    //var description = e.features[0].properties.description;
 
-                    npcPopup
-                        .setLngLat(coordinates)
-                        .setHTML(description)
-                        .addTo(map);
+                    //npcPopup
+                    //    .setLngLat(coordinates)
+                    //    .setHTML(description)
+                    //    .addTo(map);
                 });
 
                 // Change it back to a pointer when it leaves.
                 map.on('mouseleave', 'npcs_layer', function () {
                     map.getCanvas().style.cursor = '';
-                    npcPopup.remove();
+                    //npcPopup.remove();
                 });
                 //initialiseShopData();
             });
         };
+
+        const UpdateUI = async () => 
+        {
+            getPlayerData().then((data) => {
+                $("#playerName").html(data.name);
+                $("#gold").html("Gold: " + data.gold);
+                $("#level").html("Level: " + data.level);
+                $("#levelScore").html("Score: " + data.scoreCurrent + "/" + data.scorePerLevel);
+                $("#sanitizer").html("Sanitizer: x" + data.sanitiserCount);
+                $("#mask").html("Mask: x" + data.maskCount);
+                $("#covidTest").html("Covid-19 Test: x" + data.covidTestCount);
+            });
+        }
 
     </script>
 
