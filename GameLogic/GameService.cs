@@ -116,10 +116,17 @@ namespace Handshake.GameLogic
         public bool IsNPCReady(int npcId)
         {
             NPC npc = NPCs.Find(x => x.ID == npcId);
-            if ((DateTime.Now - npc.LastInteractedTime).TotalMinutes > nPCRefreshTime)
-                return true;
+            if (npc != null)
+            {
+                if ((DateTime.Now - npc.LastInteractedTime).TotalMinutes > nPCRefreshTime)
+                    return true;
+                else
+                    return false;
+            }
             else
-                return false;
+            {
+                throw new NullReferenceException("Invalid NPC ID");
+            }
         }
 
         public void ShakeHand(int npcId)
@@ -133,11 +140,18 @@ namespace Handshake.GameLogic
             }
 
             NPC npc = NPCs.Find(x => x.ID == npcId);
-            npc.LastInteractedTime = DateTime.Now;
-            if (npc.IsInfected && !CheckMaskOn())
+            if (npc != null)
             {
-                if (infectionRoll.NextDouble() < playerInfectionChance)
-                    player.IsInfected = true;
+                npc.LastInteractedTime = DateTime.Now;
+                if (npc.IsInfected && !CheckMaskOn())
+                {
+                    if (infectionRoll.NextDouble() < playerInfectionChance)
+                        player.IsInfected = true;
+                }
+            }
+            else
+            {
+                throw new NullReferenceException("Invalid NPC ID");
             }
         }
 
@@ -176,32 +190,53 @@ namespace Handshake.GameLogic
 
         public Shop GetShopInventory(int shopId)
         {
-            //need to add reset
-            return shops.Find(x => x.ID == shopId);
+            Shop shop = shops.Find(x => x.ID == shopId);
+            if (shop != null)
+            {
+                return shops.Find(x => x.ID == shopId);
+            }
+            else
+            {
+                throw new NullReferenceException("Invalid shop ID");
+            }
         }
 
         public Shop BuySanitiser(int shopId)
         {
             Shop shop = shops.Find(x => x.ID == shopId);
-            if (shop.SanitiserCount > 0 && player.Gold > shop.SanitiserCost)
+            if (shop != null)
             {
-                shop.SanitiserCount --;
-                player.SanitiserCount++;
-                player.Gold -= shop.SanitiserCost;
+                if (shop.SanitiserCount > 0 && player.Gold > shop.SanitiserCost)
+                {
+                    shop.SanitiserCount--;
+                    player.SanitiserCount++;
+                    player.Gold -= shop.SanitiserCost;
+                }
+                return shop;
             }
-            return shop;
+            else
+            {
+                throw new NullReferenceException("Invalid shop ID");
+            }
         }
 
         public Shop BuyMask(int shopId)
         {
             Shop shop = shops.Find(x => x.ID == shopId);
-            if (shop.MaskCount > 0 && player.Gold > shop.MaskCost)
+            if (shop != null)
             {
-                shop.MaskCount--;
-                player.MaskCount++;
-                player.Gold -= shop.MaskCost;
+                if (shop.MaskCount > 0 && player.Gold > shop.MaskCost)
+                {
+                    shop.MaskCount--;
+                    player.MaskCount++;
+                    player.Gold -= shop.MaskCost;
+                }
+                return shop;
             }
-            return shop;
+            else
+            {
+                throw new NullReferenceException("Invalid shop ID");
+            }
         }
 
         private void TEMPGenerateShop(int numberToSpawn)
