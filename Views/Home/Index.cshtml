@@ -1,13 +1,35 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
+﻿
+@{
+    Layout = null;
 }
 
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset='utf-8' />
+    <title>Airport Explorer</title>
+    <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+    <link href='https://api.mapbox.com/mapbox-gl-js/v1.8.1/mapbox-gl.css' rel='stylesheet' />
+    <link rel="stylesheet" href="css/w3.css">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+        }
 
+        #map {
+            position: absolute;
+            top: 50px;
+            bottom: 50px;
+            width: 100%;
+        }
+        .UIText{
+            font-family: "Great Vibes", cursive;
+        }
+    </style>
 
-<partial name="_LoginPartial"/>
-
-
-@*<body>
+</head>
+<body>
     <div class="w3-sidebar  UIText w3-dark-grey w3-bar-block w3-card w3-animate-right" style="display:none;right:0;" id="rightMenu">
         <button onclick="closeRightMenu()" class="w3-bar-item w3-button w3-large">Close &times;</button>
         <h5 class=" w3-padding UIText">SHOP</h5>
@@ -252,6 +274,6 @@
 
     </script>
 
-</body>*@
-
+</body>
+</html>
 

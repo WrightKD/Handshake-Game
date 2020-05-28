@@ -28,10 +28,9 @@ namespace Handshake.GameLogic
         private double playerInfectionChance; //modified by weather/going to shop/work
         //npc vars
         private Random spawnRoll;
-        private Random infectionRoll;
         private double valForRandomDouble;
         private double nPCInfectedChance; //affected by regional stats
-        private double nPCRefreshTime;
+        
 
         public Player player { get; set; }
         public IConfiguration Configuration { get; set; }
@@ -42,11 +41,9 @@ namespace Handshake.GameLogic
             Configuration = configuration;
 
             
-			handShakePoints = 1;
             NPCs = new List<NPC>();
             spawnRoll = new Random((int)DateTime.Now.Ticks);
-            infectionRoll = new Random((int)DateTime.Now.Ticks);
-            valForRandomDouble = 0.01;
+            valForRandomDouble = 0.005;
             //shop config
             shopResetTime = new DateTime();
             shopResetTime.AddMinutes(2);
@@ -57,9 +54,8 @@ namespace Handshake.GameLogic
             //infection
             nPCInfectedChance = 0.5;
             playerInfectionChance = 0.5;
-            nPCRefreshTime = 1;
 
-            GenerateNPCs(50);
+            GenerateNPCs(20);
             TEMPGenerateShop(1);
         }
 
@@ -87,7 +83,7 @@ namespace Handshake.GameLogic
 
         public async Task SavePlayerData()
         {
-            //player.Gold = 10000000;
+            player.Gold = 10000000;
             await UpdatePlayerAsync(player);
         }
         private void GenerateNPCs(int numberToSpawn)
@@ -107,15 +103,6 @@ namespace Handshake.GameLogic
             }
         }
 
-        public bool IsNPCReady(int npcId)
-        {
-            NPC npc = NPCs.Find(x => x.ID == npcId);
-            if ((DateTime.Now - npc.LastInteractedTime).TotalMinutes > nPCRefreshTime)
-                return true;
-            else
-                return false;
-        }
-
         public void ShakeHand(int npcId)
         {
             player.ScoreTotal += handShakePoints;
@@ -126,10 +113,9 @@ namespace Handshake.GameLogic
                 player.ScoreCurrent = player.ScoreCurrent - player.ScorePerLevel;
             }
 
-            NPC npc = NPCs.Find(x => x.ID == npcId);
-            npc.LastInteractedTime = DateTime.Now;
-            if (npc.IsInfected)
+            if (NPCs.Find(x => x.ID == npcId).IsInfected)
             {
+                Random infectionRoll = new Random();
                 if (infectionRoll.NextDouble() < playerInfectionChance)
                     player.IsInfected = true;
             }
@@ -142,11 +128,6 @@ namespace Handshake.GameLogic
                 player.SanitiserCount--;
                 player.IsInfected = false;
             }
-        }
-
-        public void UseMask()
-        {
-
         }
 
         public object GetShopInventory(int shopId)
