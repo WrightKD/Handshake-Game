@@ -82,6 +82,11 @@ namespace Handshake.Controllers
             _gameService.UseMask();
             return new JsonResult(_gameService.player.MaskCount);
         }
+        public IActionResult UseTest()//change name
+        {
+            _gameService.UseTest();
+            return new JsonResult(_gameService.player.IsInfected);
+        }
 
         public IActionResult GetShopInventory(int shopId)
         {
@@ -105,8 +110,19 @@ namespace Handshake.Controllers
             var shop = _gameService.BuyMask(shopId);
             var data = new Dictionary<string, string>
             {
-                {"shopSanitiserCount",  shop.MaskCount.ToString()},
-                {"playerSanitiserCount",  _gameService.player.MaskCount.ToString()},
+                {"shopMaskCount",  shop.MaskCount.ToString()},
+                {"playerMaskCount",  _gameService.player.MaskCount.ToString()},
+                {"playerGold",  _gameService.player.Gold.ToString()}
+            };
+            return new JsonResult(data);
+        }
+        public IActionResult BuyTest(int shopId)
+        {
+            var shop = _gameService.BuyTest(shopId);
+            var data = new Dictionary<string, string>
+            {
+                {"shopTestCount",  shop.TestCount.ToString()},
+                {"playerTestCount",  _gameService.player.TestCount.ToString()},
                 {"playerGold",  _gameService.player.Gold.ToString()}
             };
             return new JsonResult(data);

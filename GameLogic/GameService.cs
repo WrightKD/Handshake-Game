@@ -182,6 +182,14 @@ namespace Handshake.GameLogic
             }
         }
 
+        public void UseTest()
+        {
+            if (player.TestCount > 0)
+            {
+                player.TestCount--;
+            }
+        }
+
         public Shop GetShopInventory(int shopId)
         {
             Shop shop = shops.Find(x => x.ID == shopId);
@@ -224,6 +232,25 @@ namespace Handshake.GameLogic
                     shop.MaskCount--;
                     player.MaskCount++;
                     player.Gold -= shop.MaskCost;
+                }
+                return shop;
+            }
+            else
+            {
+                throw new NullReferenceException("Invalid shop ID");
+            }
+        }
+
+        public Shop BuyTest(int shopId)
+        {
+            Shop shop = shops.Find(x => x.ID == shopId);
+            if (shop != null)
+            {
+                if (shop.TestCount > 0 && player.Gold > shop.TestCost)
+                {
+                    shop.TestCount--;
+                    player.TestCount++;
+                    player.Gold -= shop.TestCost;
                 }
                 return shop;
             }

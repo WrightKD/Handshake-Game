@@ -15,7 +15,8 @@ namespace Handshake.Models
             IsInfected = false;
             IsContaminated = false;
             SanitiserCount = 2;
-            MaskCount = 0;
+            MaskCount = 1;
+            TestCount = 1;
             Gold = 100;
         }
         
@@ -25,6 +26,7 @@ namespace Handshake.Models
         public int ScorePerLevel { get; set; }
         public int SanitiserCount { get; set; }
         public int MaskCount { get; set; }
+        public int TestCount { get; set; }
         public int Gold { get; set; }
         public bool IsInfected { get; set; }
         public bool IsContaminated { get; set; }
