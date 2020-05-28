@@ -122,5 +122,14 @@ namespace HandshakeGame.Controllers
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
+
+        public IActionResult AdminLogin()
+        {
+            //var db = Database.Open("WebPagesMovies");
+            //var selectedData = db.Query("SELECT * FROM Movies");
+            //var grid = new WebGrid(source: users.GetAll());
+            //Console.WriteLine("I Am here : " + users.GetAll());
+            return View("~/Views/Manage/AdminDashboard.cshtml");
+        }
     }
 }
