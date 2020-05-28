@@ -7,16 +7,13 @@ namespace Handshake.Models
 {
     public class NPC
     {
-        public NPC(bool randomiseInfection, int id, string name="John", string description="A simple man") 
+        public NPC(int id,double infectedChance, string name="John", string description="A simple man") 
         {
-            if (randomiseInfection)
-                RandomiseInfection(0.5);
-            else
-                IsInfected = false;
             ID = id;
             Name = name;
             Description = description;
             LastInteractedTime = new DateTime(DateTime.MinValue.Ticks);
+            RandomiseInfection(infectedChance);
         }
 
         public int ID { get; set; }

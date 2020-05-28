@@ -29,9 +29,8 @@ namespace Handshake.Controllers
 
         public IActionResult ShakeHand(int npcId)
         {
-            _gameService.ShakeHand(npcId, 0.5);
+            _gameService.ShakeHand(npcId);
             //System.Diagnostics.Debug.WriteLine(_gameService.player.Score);
-
              return new JsonResult(_gameService.player);
         }
 
@@ -67,10 +66,11 @@ namespace Handshake.Controllers
             var shop = _gameService.BuySanitiser(shopId);
             var data = new Dictionary<string, string>
             {
-                {"shopSanitiserCount",  shop.SanitiserCost.ToString()},
+                {"shopSanitiserCount",  shop.SanitiserCount.ToString()},
                 {"playerSanitiserCount",  _gameService.player.SanitiserCount.ToString()},
                 {"playerGold",  _gameService.player.Gold.ToString()}
             };
+           // var data2 = { { "shopSanitiserCount", shop.SanitiserCost.ToString() } };
             return new JsonResult(data);
         }
 

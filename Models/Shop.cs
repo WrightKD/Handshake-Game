@@ -7,12 +7,13 @@ namespace Handshake.Models
 {
     public class Shop
     {
-        public Shop(int id)
+        public Shop(int id, int sanitiserCount, int sanitiserCost, int maskCount, int maskCost)
         {
             ID = id;
-            SanitiserCount = 2;
-            SanitiserCost = 10;
-            MaskCount = 1;
+            SanitiserCount = sanitiserCount;
+            SanitiserCost = sanitiserCost;
+            MaskCount = maskCount;
+            MaskCost = maskCost;
             RefreshedTime = DateTime.Now;
         }
 

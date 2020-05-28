@@ -12,30 +12,72 @@ namespace Handshake.GameLogic
         public Player player;
         public List<NPC> NPCs;
         public List<Shop> shops;
-        private Random spawnRoll;
-        //private double minVal;
-        //private double maxVal;
-        private double valForRandomDouble;
+        //shop vars
+        private int sanitiserCount;
+        private int sanitiserCost;
+        private int maskCount;
+        private int maskCost;
         private DateTime shopResetTime;
+        //player vars
+        private int handShakePoints;
+        private double playerInfectionChance; //modified by weather/going to shop/work
+        //npc vars
+        private Random spawnRoll;
+        private double valForRandomDouble;
+        private double nPCInfectedChance; //affected by regional stats
 
-        public GameService() 
+    public GameService() 
         { 
             player = new Player();
+            handShakePoints = 1;
+            NPCs = new List<NPC>();
             spawnRoll = new Random((int)DateTime.Now.Ticks);
-            //maxVal = 0.005;
-            //minVal = -0.005;
             valForRandomDouble = 0.005;
+            //shop config
             shopResetTime = new DateTime();
             shopResetTime.AddMinutes(2);
+            sanitiserCount = 2;
+            sanitiserCost = 10;
+            maskCount = 1;
+            maskCost = 50;
+            //infection
+            nPCInfectedChance = 0.5;
+            playerInfectionChance = 0.5;
 
-            GenerateNPCs(10);
+            GenerateNPCs(20);
             TEMPGenerateShop(1);
         }
 
-        public void ShakeHand(int npcId, double infectionChance)
+        public void LoadPlayerData()
         {
-            player.ScoreTotal += player.HandshakePoints;
-            player.ScoreCurrent += player.HandshakePoints;
+            //gets data from DB
+        }
+
+        public void SavePlayerData()
+        {
+
+        }
+        private void GenerateNPCs(int numberToSpawn)
+        {
+            for (int i = 0; i < numberToSpawn; i++)
+            {
+                NPCs.Add(new NPC(i, nPCInfectedChance, "John", "A simple man"));
+            }
+        }
+
+        public void RandomiseNPCLocations(double playerLatitude, double playerLongitude)
+        {
+            foreach (var npc in NPCs)
+            {
+                npc.Latitude = playerLatitude + GetRandomDouble();
+                npc.Longitude = playerLongitude + GetRandomDouble();
+            }
+        }
+
+        public void ShakeHand(int npcId)
+        {
+            player.ScoreTotal += handShakePoints;
+            player.ScoreCurrent += handShakePoints;
             if (player.ScoreCurrent >= player.ScorePerLevel)
             {
                 player.Level += player.ScoreCurrent / player.ScorePerLevel;
@@ -45,7 +87,7 @@ namespace Handshake.GameLogic
             if (NPCs.Find(x => x.ID == npcId).IsInfected)
             {
                 Random infectionRoll = new Random();
-                if (infectionRoll.NextDouble() < infectionChance)
+                if (infectionRoll.NextDouble() < playerInfectionChance)
                     player.IsInfected = true;
             }
         }
@@ -59,16 +101,6 @@ namespace Handshake.GameLogic
             }
         }
 
-        public void LoadPlayerData()
-        {
-            //gets data from DB
-        }
-
-        public void SavePlayerData()
-        {
-
-        }
-
         public object GetShopInventory(int shopId)
         {
             //need to add reset
@@ -78,7 +110,7 @@ namespace Handshake.GameLogic
         public Shop BuySanitiser(int shopId)
         {
             Shop shop = shops.Find(x => x.ID == shopId);
-            if (shop.SanitiserCount >= 0 && player.Gold > shop.SanitiserCost)
+            if (shop.SanitiserCount > 0 && player.Gold > shop.SanitiserCost)
             {
                 shop.SanitiserCount --;
                 player.SanitiserCount++;
@@ -92,27 +124,11 @@ namespace Handshake.GameLogic
             shops = new List<Shop>();
             for (int i = 0; i < numberToSpawn; i++)
             {
-                shops.Add(new Shop(i));
+                shops.Add(new Shop(i,sanitiserCount, sanitiserCost, maskCount, maskCost));
             }
         }
 
-        private void GenerateNPCs(int numberToSpawn)
-        {
-            NPCs = new List<NPC>();
-            for (int i = 0; i < numberToSpawn; i++)
-            {
-                NPCs.Add(new NPC(true, i));
-            }
-        }
 
-        public void RandomiseNPCLocations(double playerLatitude, double playerLongitude)
-        {
-            foreach (var npc in NPCs)
-            {
-                npc.Latitude = playerLatitude + GetRandomDouble();
-                npc.Longitude = playerLongitude + GetRandomDouble();
-            }
-        }
 
         private double GetRandomDouble()
         {
