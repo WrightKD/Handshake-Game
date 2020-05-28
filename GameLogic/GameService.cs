@@ -14,58 +14,52 @@ namespace Handshake.GameLogic
 {
     public class GameService
     {
-        
-        public List<NPC> NPCs { get; set; }
-        public List<Shop> shops { get; set; }
-        //shop vars
-        private int sanitiserCount;
-        private int sanitiserCost;
-        private int maskCount;
-        private int maskCost;
-        private DateTime shopResetTime;
-        //player vars
-        private int handShakePoints;
-        private double playerInfectionChance; //modified by weather/going to shop/work
-        private bool isMaskOn;
-        private DateTime timeMaskUsed;
-        private double maskDuration;
-        //npc vars
-        private Random spawnRoll;
-        private Random infectionRoll;
-        private double valForRandomDouble;
-        private double nPCInfectedChance; //affected by regional stats
-        private double nPCRefreshTime;
-
         public Player player { get; set; }
         public IConfiguration Configuration { get; set; }
+        public List<NPC> NPCs { get; set; }
+        public List<Shop> shops { get; set; }
+        //player vars
+        private readonly int handShakePoints;
+        private readonly double playerBaseInfectionChance; //modified by weather/going to shop/work
+        private readonly double maskDuration;
+        private bool isMaskOn;
+        private DateTime timeMaskUsed;
+        //shop vars
+        private readonly int sanitiserInitialCount;
+        private readonly int sanitiserCost;
+        private readonly int maskInitialCount;
+        private readonly int maskCost;
+        private readonly double shopResetMinutes;
+        //npc vars
+        private readonly Random spawnRoll;
+        private readonly Random infectionRoll;
+        private readonly double valForRandomDouble;
+        private readonly double nPCBaseInfectedChance; //affected by regional stats
+        private readonly double nPCRefreshTime;
 
         public GameService(IConfiguration configuration) 
         {
-
             Configuration = configuration;
-
-            
-			handShakePoints = 1;
             NPCs = new List<NPC>();
+            //player config
+            handShakePoints = 1;
+            playerBaseInfectionChance = 0.5;
+            maskDuration = 5;
+            isMaskOn = false;
+            timeMaskUsed = DateTime.MinValue;
+            //shop config
+            sanitiserInitialCount = 2;
+            sanitiserCost = 10;
+            maskInitialCount = 1;
+            maskCost = 50;
+            shopResetMinutes = 2;
+            //npc config
             spawnRoll = new Random((int)DateTime.Now.Ticks);
             infectionRoll = new Random((int)DateTime.Now.Ticks);
             valForRandomDouble = 0.01;
-            isMaskOn = false;
-            timeMaskUsed = DateTime.MinValue;
-            maskDuration = 5;
-            //shop config
-            shopResetTime = new DateTime();
-            shopResetTime.AddMinutes(2);
-            sanitiserCount = 2;
-            sanitiserCost = 10;
-            maskCount = 1;
-            maskCost = 50;
-            //infection
-            nPCInfectedChance = 0.5;
-            playerInfectionChance = 0.5;
+            nPCBaseInfectedChance = 0.5;
             nPCRefreshTime = 1;
-
-            GenerateNPCs(50);
+            GenerateNPCs(100);
             TEMPGenerateShop(1);
         }
 
@@ -100,7 +94,7 @@ namespace Handshake.GameLogic
         {
             for (int i = 0; i < numberToSpawn; i++)
             {
-                NPCs.Add(new NPC(i, nPCInfectedChance, "John", "A simple man"));
+                NPCs.Add(new NPC(i, nPCBaseInfectedChance, "John", "A simple man"));
             }
         }
 
@@ -145,7 +139,7 @@ namespace Handshake.GameLogic
                 npc.LastInteractedTime = DateTime.Now;
                 if (npc.IsInfected && !CheckMaskOn())
                 {
-                    if (infectionRoll.NextDouble() < playerInfectionChance)
+                    if (infectionRoll.NextDouble() < playerBaseInfectionChance)
                         player.IsInfected = true;
                 }
             }
@@ -244,7 +238,7 @@ namespace Handshake.GameLogic
             shops = new List<Shop>();
             for (int i = 0; i < numberToSpawn; i++)
             {
-                shops.Add(new Shop(i,sanitiserCount, sanitiserCost, maskCount, maskCost));
+                shops.Add(new Shop(i,sanitiserInitialCount, sanitiserCost, maskInitialCount, maskCost));
             }
         }
 

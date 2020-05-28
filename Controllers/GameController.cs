@@ -16,7 +16,6 @@ using WebApp.Models;
 
 namespace Handshake.Controllers
 {
-    //System.Diagnostics.Debug.WriteLine(_gameService.player.Score);
     public class GameController : Controller
     {
         private UserManager<ApplicationUser> _userManager;
@@ -78,13 +77,9 @@ namespace Handshake.Controllers
             }); 
         }
 
-        public IActionResult UseMask()
+        public IActionResult UseMask()//change name
         {
             _gameService.UseMask();
-           /* return new JsonResult(new Dictionary<string, string>
-            {
-                {"sanitiserCount", _gameService.player.MaskCount.ToString() }
-            });*/
             return new JsonResult(_gameService.player.MaskCount);
         }
 
@@ -119,10 +114,6 @@ namespace Handshake.Controllers
 
         public IActionResult InitialiseShops(double latitude, double longitude)
         {
-            //Get a list of hospitals in a radius of 1,5km at the center -26.1796856,28.0509079
-            // The hospital is the type of place. It is case sensitive 
-            // Vaild types : https://developers.google.com/places/supported_types#table1
-
             //var lat = "-26.1796856";
             // var lon = "28.0509079";
             var lat = latitude.ToString();
@@ -134,13 +125,9 @@ namespace Handshake.Controllers
 
             foreach (var item in shops.Results)
             {
-                var open = item.OpeningHours?.OpenNow;
-
                 var currentProperties = new Dictionary<string, string>
                 {
                     {"name", item.Name }
-                    //{"open", open.HasValue ? (open.Value ? "Open" : "Closed") : "Unknow" },
-                    //{"rating", item.Rating.HasValue ? $"{item.Rating.Value}" : "None" }
                 };
                 properties.Add(currentProperties);
                 coordinates.Add(new List<double> { item.Geometry.Location.Lng, item.Geometry.Location.Lat });
