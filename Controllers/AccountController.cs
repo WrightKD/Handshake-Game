@@ -1,10 +1,7 @@
-using System;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using Handshake.Database;
 using Handshake.Models;
 using HandshakeGame.Controllers;
-using HandshakeGame.Models;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -15,7 +12,7 @@ using WebApp.Models.AccountViewModels;
 
 namespace Handshake.Controllers
 {
-  
+
     public class AccountController : Controller
     {
         private readonly UserManager<ApplicationUser> _userManager;
@@ -102,13 +99,12 @@ namespace Handshake.Controllers
             ViewData["ReturnUrl"] = returnUrl;
             if (ModelState.IsValid)
             {
-                var user = new ApplicationUser { UserName = model.Email, Email = model.Email };
+                var user = new ApplicationUser {UserName = model.UserName, Email = model.Email};
                 var result = await _userManager.CreateAsync(user, model.Password);
 
 
                 if (result.Succeeded)
                 {
-                    _logger.LogInformation("User created a new account with password.");
 
                     //var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
                     //var callbackUrl = Url.EmailConfirmationLink(user.Id, code, Request.Scheme);
