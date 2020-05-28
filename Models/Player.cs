@@ -28,5 +28,6 @@ namespace Handshake.Models
         public int Gold { get; set; }
         public bool IsInfected { get; set; }
         public bool IsContaminated { get; set; }
+        public int Id { get; set; }
     }
 }

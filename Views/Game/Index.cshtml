@@ -1,49 +1,44 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
+﻿
+@{
+    ViewData["Title"] = "Index";
 }
 
-
-
-<partial name="_LoginPartial"/>
-
-
-@*<body>
-    <div class="w3-sidebar  UIText w3-dark-grey w3-bar-block w3-card w3-animate-right" style="display:none;right:0;" id="rightMenu">
-        <button onclick="closeRightMenu()" class="w3-bar-item w3-button w3-large">Close &times;</button>
-        <h5 class=" w3-padding UIText">SHOP</h5>
-        <a href="#" class="w3-bar-item w3-button" onclick="sanitise()">Sanitizer: 10 Gold</a>
-        <a href="#" class="w3-bar-item w3-button" onclick="getShopInventory()">Mask: 50 Gold</a>
-        <h5 class=" w3-padding UIText">USER</h5>
-        <a href="#" class="w3-bar-item w3-button" onclick="buySanitiser()">Logout</a>
-    </div>
-    <div id="statsBar" class="w3-row UIText ">
-        <div class="w3-col m2 w3-dark-grey w3-center"><p>XP: 100</p></div>
-        <div class="w3-col m2 w3-dark-grey w3-center"><p>Body: Healthy</p></div>
-        <div class="w3-col m2 w3-dark-grey w3-center"><p>Hands: Clean</p></div>
-        <div class="w3-col m2 w3-dark-grey w3-center"><p>Sanitizer: 10x</p></div>
-        <div class="w3-col m2 w3-dark-grey w3-center"><p>Gold: 100</p></div>
-        <div class="w3-col m2 w3-dark-grey w3-center">
-            <button class="w3-button w3-xlarge" onclick="openRightMenu()">&#9776;</button>
+    <body>
+        <div class="w3-sidebar  UIText w3-dark-grey w3-bar-block w3-card w3-animate-right" style="display:none;right:0;" id="rightMenu">
+            <button onclick="closeRightMenu()" class="w3-bar-item w3-button w3-large">Close &times;</button>
+            <h5 class=" w3-padding UIText">SHOP</h5>
+            <a href="#" class="w3-bar-item w3-button" onclick="sanitise()">Sanitizer: 10 Gold</a>
+            <a href="#" class="w3-bar-item w3-button" onclick="getShopData()">Mask: 50 Gold</a>
+            <h5 class=" w3-padding UIText">USER</h5>
+            <a href="#" class="w3-bar-item w3-button" onclick="buySanitiser()">Logout</a>
         </div>
-    </div>
-    <div id='map'></div>
-    <div id="CovidBar" class="w3-row UIText w3-dark-grey" style="position: relative;">
-  
-    </div>
-    <script src='https://api.mapbox.com/mapbox-gl-js/v1.8.1/mapbox-gl.js'></script>
+        <div id="statsBar" class="w3-row UIText ">
+            <div class="w3-col m2 w3-dark-grey w3-center"><p>XP: 100</p></div>
+            <div class="w3-col m2 w3-dark-grey w3-center"><p>Body: Healthy</p></div>
+            <div class="w3-col m2 w3-dark-grey w3-center"><p>Hands: Clean</p></div>
+            <div class="w3-col m2 w3-dark-grey w3-center"><p>Sanitizer: 10x</p></div>
+            <div class="w3-col m2 w3-dark-grey w3-center"><p>Gold: 100</p></div>
+            <div class="w3-col m2 w3-dark-grey w3-center">
+                <button class="w3-button w3-xlarge" onclick="openRightMenu()">&#9776;</button>
+            </div>
+        </div>
+        <div id='map'></div>
+        <div id="CovidBar" class="w3-row UIText w3-dark-grey" style="position: relative;">
 
-    <script>
+        </div>
+        <script src='https://api.mapbox.com/mapbox-gl-js/v1.8.1/mapbox-gl.js'></script>
+
+        <script>
         var playerLat = -26.170458
-        var playerLong = 28.0519267 
-        var gameZoom = 16
+        var playerLong = 28.0519267
         mapboxgl.accessToken = 'pk.eyJ1Ijoid3JpZ2h0a2QiLCJhIjoiY2thN3duNW42MDR5bjJ3c2JibGZjdTc5aSJ9.WfzsXOP8KI0_PVo9su3ubw';
 
         var map = new mapboxgl.Map({
             container: 'map',
             style: 'mapbox://styles/mapbox/dark-v10',
-            zoom: gameZoom,
-            minZoom: gameZoom,
-            maxZoom: gameZoom,
+            zoom: 16,
+            minZoom: 16,
+            maxZoom: 17,
             center: [ playerLong, playerLat,]
         });
 
@@ -58,6 +53,13 @@
                     if (error) throw error;
                     map.addImage('ISS', image);
                 });
+
+                /* map.loadImage('https://upload.wikimedia.org/wikipedia/commons/thumb/8/88/Map_marker.svg/200px-Map_marker.svg.png', function (error, image) {
+                     if (error) throw error;
+                     map.addImage('npc_image', image);
+                 });
+                 console.log(map.listImages());*/
+
 
                 map.addSource("airports",
                     {
@@ -106,29 +108,73 @@
             document.getElementById("CovidBar").innerHTML = list;
         });
 
-        const getPlayerData = async () => {
-            var response = await fetch('/Game/GetPlayerData');
+        //need to do stuff with data.IsInfected and data.ItemCount
+        const sanitise = async () => {
+            var response = await fetch('/Game/Sanitise');
             var data = await response.json();
-            console.log(data);
+            console.log("Infected: " + data.isInfected +"\nSanitiser: " + data.sanitiserCount);
             return data;
         }
+
+        const getPlayerData = async () => {
+            var response = await fetch('/Game/ShakeHand');
+            var data = await response.json();
+            return data;
+            //console.log(data);
+        }
+
+        getPlayerData().then((stats) => {
+           // console.log(stats);
+        });
 
         const getNPCData = async () => {
             var response = await fetch('/Game/GetNPCData');
             var data = await response.json();
-            // console.log(data);
+           // console.log(data);
             return data;
         }
 
-        const initialiseNPCs = async () => {
-            var response = await fetch('/Game/InitialiseNPCs?latitude=-26.170458&longitude=28.0519267');
-            var data = await response.json();
+        getNPCData().then((data) => {
             //console.log(data);
+        });
+
+        const initialiseShopData = async () => {
+            var response = await fetch('/Game/InitialiseShops');
+            var data = await response.json();
+            console.log("Shops: ");
+            console.log(data);
             return data;
         }
 
-        const isNPCReady = async () => {
-            var response = await fetch('/Game/IsNPCReady?npcId=');
+
+        const getShopData = async () => {
+            var response = await fetch('/Game/GetShopInventory');
+            var data = await response.json();
+            console.log("ShopInventory: ");
+            console.log(data);
+            return data;
+        }
+
+        const buySanitiser = async () => {
+            var response = await fetch('/Game/BuySanitiser?shopId=0');
+            var data = await response.json();
+            //console.log("BuySanitiser: ");
+            console.log(data);
+            return data;
+        }
+
+        /*const initialiseNPCData = async () => {
+            var response = await fetch('/Game/test?a=0.1');
+            var data = await response.json();
+            console.log(data);
+        }
+
+        initialiseNPCData().then((data2) => {
+            console.log(data2);
+        });*/
+
+        const initialiseNPCData = async () => {
+            var response = await fetch('/Game/InitialiseNPCs?latitude=-26.170458&longitude=28.0519267');
             var data = await response.json();
             //console.log(data);
             return data;
@@ -141,41 +187,9 @@
             return data;
         }
 
-        const sanitise = async () => {
-            var response = await fetch('/Game/Sanitise');
-            var data = await response.json();
-            console.log("Infected: " + data.isInfected + "\nSanitiser: " + data.sanitiserCount);
-            return data;
-        }
-
-        const getShopInventory = async () => {
-            var response = await fetch('/Game/GetShopInventory');
-            var data = await response.json();
-            console.log("ShopInventory: ");
-            console.log(data);
-            return data;
-        }
-
-        const buySanitiser = async () => {
-            var response = await fetch('/Game/BuySanitiser?shopId=0');
-            var data = await response.json();
-            console.log("BuySanitiser: ");
-            console.log(data);
-            return data;
-        }
-
-        const initialiseShops = async () => {
-            var response = await fetch('/Game/InitialiseShops');
-            var data = await response.json();
-            console.log("Shops: ");
-            console.log(data);
-            return data;
-        }
-
         function initGameData() {
             //inits all NPCs
-            getPlayerData();
-            initialiseNPCs().then((data) => {
+            initialiseNPCData().then((data) => {
                 console.log(data[0].longitude);
                 map.addSource('npcs_source', {
                     'type': 'geojson',
@@ -185,6 +199,8 @@
                     }
                 });
                 data.forEach((item) => {
+                    //console.log("a:");
+                    //console.log(a);
                     map.getSource('npcs_source')._data.features.push({
                         'type': 'Feature',
                         'properties': {
@@ -199,8 +215,9 @@
                         }
                     })
                 })
+               // console.log(map.getSource('npcs_source'));
                 map.getSource('npcs_source').setData(map.getSource('npcs_source')._data);
-
+                //console.log(map.listImages());
                 map.addLayer({
                     'id': 'npcs_layer',
                     'type': 'symbol',
@@ -211,20 +228,17 @@
                     }
                 });
 
-                //can change this to make better UI
                 var npcPopup = new mapboxgl.Popup({
                     closeButton: false,
                     closeOnClick: false
                 });
 
+
                 // Center the map on the coordinates of any clicked symbol from the 'symbols' layer.
                 map.on('click', 'npcs_layer', function (e) {
                     //map.flyTo({ center: e.features[0].geometry.coordinates });
-                    isNPCReady().then((data) => {
-                        console.log(data);
-                    });
                     shakeHand().then((data) => {
-                        console.log('score: ' + data.scoreCurrent + '\nlevel: ' + data.level + '\nisInfected: ' + data.isInfected);
+                        console.log('score: '+ data.scoreCurrent + '\nlevel: ' + data.level);
                     });
                 });
 
@@ -247,11 +261,12 @@
                     npcPopup.remove();
                 });
                 //initialiseShopData();
+
+                 console.log(map.getLayer('npcs_layer'));
             });
         };
 
-    </script>
+        </script>
 
-</body>*@
-
+    </body>
 
