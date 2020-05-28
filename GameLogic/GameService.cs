@@ -15,8 +15,8 @@ namespace Handshake.GameLogic
     public class GameService
     {
         
-        public List<NPC> NPCs;
-        public List<Shop> shops;
+        public List<NPC> NPCs { get; set; }
+        public List<Shop> shops { get; set; }
         //shop vars
         private int sanitiserCount;
         private int sanitiserCost;
@@ -26,6 +26,9 @@ namespace Handshake.GameLogic
         //player vars
         private int handShakePoints;
         private double playerInfectionChance; //modified by weather/going to shop/work
+        private bool isMaskOn;
+        private DateTime timeMaskUsed;
+        private double maskDuration;
         //npc vars
         private Random spawnRoll;
         private Random infectionRoll;
@@ -47,6 +50,9 @@ namespace Handshake.GameLogic
             spawnRoll = new Random((int)DateTime.Now.Ticks);
             infectionRoll = new Random((int)DateTime.Now.Ticks);
             valForRandomDouble = 0.01;
+            isMaskOn = false;
+            timeMaskUsed = DateTime.MinValue;
+            maskDuration = 5;
             //shop config
             shopResetTime = new DateTime();
             shopResetTime.AddMinutes(2);
@@ -128,11 +134,25 @@ namespace Handshake.GameLogic
 
             NPC npc = NPCs.Find(x => x.ID == npcId);
             npc.LastInteractedTime = DateTime.Now;
-            if (npc.IsInfected)
+            if (npc.IsInfected && !CheckMaskOn())
             {
                 if (infectionRoll.NextDouble() < playerInfectionChance)
                     player.IsInfected = true;
             }
+        }
+
+        private bool CheckMaskOn()
+        {
+            if (isMaskOn)
+            {
+                if ((DateTime.Now - timeMaskUsed).TotalMinutes > maskDuration)
+                {
+                    isMaskOn = false;
+                    return false;
+                }
+                return true;
+            }
+            return false;
         }
 
         public void UseSanitiser()
@@ -146,10 +166,15 @@ namespace Handshake.GameLogic
 
         public void UseMask()
         {
-
+            if (player.MaskCount > 0)
+            {
+                player.MaskCount--;
+                isMaskOn = true;
+                timeMaskUsed = DateTime.Now;
+            }
         }
 
-        public object GetShopInventory(int shopId)
+        public Shop GetShopInventory(int shopId)
         {
             //need to add reset
             return shops.Find(x => x.ID == shopId);
@@ -166,7 +191,19 @@ namespace Handshake.GameLogic
             }
             return shop;
         }
-        
+
+        public Shop BuyMask(int shopId)
+        {
+            Shop shop = shops.Find(x => x.ID == shopId);
+            if (shop.MaskCount > 0 && player.Gold > shop.MaskCost)
+            {
+                shop.MaskCount--;
+                player.MaskCount++;
+                player.Gold -= shop.MaskCost;
+            }
+            return shop;
+        }
+
         private void TEMPGenerateShop(int numberToSpawn)
         {
             shops = new List<Shop>();
@@ -175,8 +212,6 @@ namespace Handshake.GameLogic
                 shops.Add(new Shop(i,sanitiserCount, sanitiserCost, maskCount, maskCost));
             }
         }
-
-
 
         private double GetRandomDouble()
         {

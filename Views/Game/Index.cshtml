@@ -172,24 +172,32 @@
             return data;
         }
 
-        const getShopInventory = async () => {
-            var response = await fetch('/Game/GetShopInventory');
+        const getShopInventory = async (shopId) => {
+            var response = await fetch('/Game/GetShopInventory?shopId=' + shopId);
             var data = await response.json();
             console.log("ShopInventory: ");
             console.log(data);
             return data;
         }
 
-        const buySanitiser = async () => {
-            var response = await fetch('/Game/BuySanitiser?shopId=0');
+        const buySanitiser = async (shopId) => {
+            var response = await fetch('/Game/BuySanitiser?shopId=' + shopId);
             var data = await response.json();
             console.log("BuySanitiser: ");
             console.log(data);
             return data;
         }
 
+        const buyMask = async (shopId) => {
+            var response = await fetch('/Game/BuySanitiser?shopId=' + shopId);
+            var data = await response.json();
+            console.log("BuyMask: ");
+            console.log(data);
+            return data;
+        }
+
         const initialiseShops = async () => {
-            var response = await fetch('/Game/InitialiseShops');
+            var response = await fetch('/Game/InitialiseShops?latitude=' + playerLat + '&longitude=' + playerLong);
             var data = await response.json();
             console.log("Shops: ");
             console.log(data);
@@ -212,10 +220,9 @@
                     map.getSource('npcs_source')._data.features.push({
                         'type': 'Feature',
                         'id': item.id,
-                        'properties': [
-                                { 'description': "<strong>" + item.name + "</strong><p>" + item.description + "</p>" },
-                                {'id': item.id}
-                        ],
+                        'properties': {
+                            'description': "<strong>" + item.name + "</strong><p>" + item.description + "</p>"
+                        },
                         'geometry': {
                             'type': 'Point',
                             'coordinates': [
@@ -267,8 +274,8 @@
                     console.log(e.features[0].properties.description);
 
                     console.log(e.features[0].properties.id);
-                    console.log(e.features[0].properties[1].id);*/
-                    map.getCanvas().style.cursor = 'pointer';
+                    console.log(e.features[0].properties[1].id);
+                    map.getCanvas().style.cursor = 'pointer';*/
 
                     var coordinates = e.features[0].geometry.coordinates.slice();
                     var description = e.features[0].properties.description;
@@ -284,7 +291,65 @@
                     map.getCanvas().style.cursor = '';
                     npcPopup.remove();
                 });
-                initialiseShops();
+                //initialiseShops();
+
+            });
+
+            //inits shops
+            initialiseShops().then((data) => {
+                console.log(data);
+                map.addSource('shops_source', {
+                    'type': 'geojson',
+                    'data': data
+                });
+
+                map.addLayer({
+                    'id': 'shops_layer',
+                    'type': 'symbol',
+                    'source': 'shops_source',
+                    'layout': {
+                        'icon-image': 'rocket-15', //this needs to be changed
+                        'icon-size': 2
+                    }
+                });
+
+                //can change this to make better UI
+                var shopPopup = new mapboxgl.Popup({
+                    closeButton: false,
+                    closeOnClick: false
+                });
+
+                // Center the map on the coordinates of any clicked symbol from the 'symbols' layer.
+                map.on('click', 'shops_layer', function (e) {
+                    //buySanitiser()
+                });
+
+                // Change the cursor to a pointer when the it enters a feature in the 'symbols' layer.
+                map.on('mouseenter', 'shops_layer', function (e) {
+                    //console.log(e.features[0].id);
+
+                    console.log(e);
+                    console.log(e.features[0].properties);
+                    console.log(e.features[0].properties.name);
+
+                   // console.log(e.features[0].properties.id);
+                    //console.log(e.features[0].properties[1].id);
+                    map.getCanvas().style.cursor = 'pointer';
+
+                    var coordinates = e.features[0].geometry.coordinates.slice();
+                    var description = e.features[0].properties.description;
+
+                    shopPopup
+                        .setLngLat(coordinates)
+                        .setHTML(description)
+                        .addTo(map);
+                });
+
+                // Change it back to a pointer when it leaves.
+                map.on('mouseleave', 'shops_layer', function () {
+                    map.getCanvas().style.cursor = '';
+                    shopPopup.remove();
+                });
             });
         };
 
