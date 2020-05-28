@@ -50,6 +50,7 @@ namespace Handshake.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Login(LoginViewModel model, string returnUrl = null)
         {
+            _logger.LogInformation("Login");
             ViewData["ReturnUrl"] = returnUrl;
             if (ModelState.IsValid)
             {
@@ -147,8 +148,9 @@ namespace Handshake.Controllers
 
         public async Task<IActionResult> ExternalLoginCallback(string returnUrl = null)
         {
+            _logger.LogInformation("External Login Callback");
             var info = await _signInManager.GetExternalLoginInfoAsync();
-            Console.WriteLine(info.Principal.FindFirstValue(ClaimTypes.Email));
+            _logger.LogInformation(info.Principal.FindFirstValue(ClaimTypes.Email));
             if (info == null)
             {
                 return RedirectToAction(nameof(Login));
@@ -161,9 +163,10 @@ namespace Handshake.Controllers
 
         public IActionResult ExternalLogin(string provider, string returnUrl = null)
         {
+            _logger.LogInformation("External login started");
             var redirectUrl = "https://localhost:44351" + Url.Action(nameof(ExternalLoginCallback), "Account", new { returnUrl });
-            Console.WriteLine(redirectUrl);
-            Console.WriteLine(returnUrl);
+            _logger.LogInformation(redirectUrl);
+            _logger.LogInformation(returnUrl);
             var properties = _signInManager.ConfigureExternalAuthenticationProperties(provider, redirectUrl);
             return Challenge(properties, provider);
         }
