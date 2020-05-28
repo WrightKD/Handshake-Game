@@ -66,6 +66,76 @@
 </div>
 
 <h2>List All  Users</h2>
+<div id="table">
 
+    @using (Html.BeginForm("ListUsers", "AdminDashboard", FormMethod.Post))
+    {
+    
+    @if(ViewBag.Users!=null){
+        
+           <table cellpadding = "0" cellspacing = "0" id="t01">
+               <thead>  
+              <tr>
+                <th>Username</th>
+                <th>Role</th>  
+             </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in ViewBag.Users)
+                {
+                    <tr>
+                        <td>@item.UserName</td>
+                        <td>@item.SerializedRoles</td>
+                    </tr>
+                    <br>
+
+                }
+            </tbody>
+        </table>
+    }
+
+
+        <input type="submit" value="View" class="btn btn-primary" />
+    }
+ 
+</div>
+<style>
+
+div {
+  border-radius: 8px;
+  background-color: #f2f2f2;
+  padding: 20px;
+}
+table#t01 {  
+width: 50%;  
+background-color: #f1f1c1;  
+}  
+  
+table#t01 tr:nth-child(even) {  
+background-color: #eee;  
+}  
+table#t01 tr:nth-child(odd) {  
+background-color: #fff;  
+}  
+table#t01 th {  
+color: white;  
+background-color:blue;  
+}  
+table, th, td {  
+border: 1px solid black;  
+}  
+table, th, td {  
+border: 1px solid black;  
+border-collapse: collapse;  
+}  
+table, th, td {  
+border: 1px solid black;  
+border-collapse: collapse;  
+}  
+th, td {  
+padding: 15px;  
+} 
+
+</style>
 
 >
