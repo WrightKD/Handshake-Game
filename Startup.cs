@@ -1,4 +1,5 @@
 using Handshake.Database;
+using Handshake.Services;
 using HandshakeGame.Database;
 using HandshakeGame.Database.Models;
 using HandshakeGame.Models;
@@ -8,7 +9,6 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using System;
 using System.Threading.Tasks;
 using WebApp.Models;
@@ -31,9 +31,11 @@ namespace Handshake
             services.AddControllersWithViews();
             services.AddSingleton<IDBConnection, DBConnection>();
             services.AddSingleton<IDBModel<User, UserCreate>, Users>();
+            services.AddSingleton<AdminService>();
 
             services.AddTransient<IUserStore<ApplicationUser>, UserStore>();
             services.AddTransient<IRoleStore<ApplicationRole>, RoleStore>();
+            
 
             services.AddIdentity<ApplicationUser, ApplicationRole>()
                 .AddDefaultTokenProviders();
