@@ -19,5 +19,6 @@ namespace Handshake.Models
         public bool IsInfected { get; set; }
         public bool IsContaminated { get; set; }
         public int Id { get; set; }
+        public string Name { get; set; }
     }
 }

@@ -40,8 +40,10 @@ namespace Handshake.Controllers
 
             return View();
         }
-        public IActionResult GetPlayerData()
+        public async Task<IActionResult> GetPlayerData()
         {
+            var user = await _userManager.FindByIdAsync(_gameService.player.Id.ToString());
+            _gameService.player.Name = user.UserName;
             return new JsonResult(_gameService.player);
         }
 

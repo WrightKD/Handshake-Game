@@ -235,7 +235,7 @@ namespace Handshake.GameLogic
             Shop shop = shops.Find(x => x.ID == shopId);
             if (shop != null)
             {
-                if (shop.SanitiserCount > 0 && player.Gold > shop.SanitiserCost)
+                if (shop.SanitiserCount > 0 && player.Gold >= shop.SanitiserCost)
                 {
                     shop.SanitiserCount--;
                     player.SanitiserCount++;
@@ -254,7 +254,7 @@ namespace Handshake.GameLogic
             Shop shop = shops.Find(x => x.ID == shopId);
             if (shop != null)
             {
-                if (shop.MaskCount > 0 && player.Gold > shop.MaskCost)
+                if (shop.MaskCount > 0 && player.Gold >= shop.MaskCost)
                 {
                     shop.MaskCount--;
                     player.MaskCount++;
@@ -273,7 +273,7 @@ namespace Handshake.GameLogic
             Shop shop = shops.Find(x => x.ID == shopId);
             if (shop != null)
             {
-                if (shop.TestCount > 0 && player.Gold > shop.TestCost)
+                if (shop.TestCount > 0 && player.Gold >= shop.TestCost)
                 {
                     shop.TestCount--;
                     player.CovidTests++;

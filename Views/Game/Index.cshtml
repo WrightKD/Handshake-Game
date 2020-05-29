@@ -372,6 +372,8 @@
 
         const UpdateUI = async () => {
             getPlayerData().then((data) => {
+                console.log("PLAYER DATA ");
+                console.log(data);
                 $("#playerName").html(data.name);
                 $("#gold").html("Gold: " + data.gold);
                 $("#level").html("Level: " + data.level);
