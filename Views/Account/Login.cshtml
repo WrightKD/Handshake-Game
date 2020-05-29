@@ -18,9 +18,9 @@
         <form class="w3-container" asp-route-returnurl="@ViewData["ReturnUrl"]" method="post">
 
             <p>
-                <input asp-for="Email" id="email" class="w3-input" type="email" name="email" style="width:90%" required>
-                <label asp-for="Email" class="loginbtn">Email</label>
-                <span asp-validation-for="Email" class="text-danger"></span>
+                <input asp-for="User" id="email" class="w3-input" type="text" name="user" style="width:90%" required>
+                <label asp-for="User" class="loginbtn">User Name</label>
+                <span asp-validation-for="User" class="text-danger"></span>
             </p>
             <p>
                 <input asp-for="Password" id="password" class="w3-input" type="password" name="password" style="width:90%" required>
