@@ -375,7 +375,7 @@
                 $("#levelScore").html("Score: " + data.scoreCurrent + "/" + data.scorePerLevel);
                 $("#sanitizer").html("Sanitizer: x" + data.sanitiserCount);
                 $("#mask").html("Mask: x" + data.maskCount);
-                $("#covidTest").html("Covid-19 Test: x" + data.testCount);
+                $("#covidTest").html("Covid-19 Test: x" + data.covidTests);
             });
         }
 
@@ -468,6 +468,7 @@
 
             //inits shops
             initialiseShops().then((data) => {
+                console.log('Shop data: ')
                 console.log(data);
                 map.addSource('shops_source', {
                     'type': 'geojson',
@@ -487,8 +488,12 @@
                 // Center the map on the coordinates of any clicked symbol from the 'symbols' layer.
                 map.on('click', 'shops_layer', function (e) {
                     //add functionality here
-                    $("#shop").attr("data-id", e.features[0].id)
-                    ShopUpdate(e.features[0].id).then((data) => {
+                    console.log('asdf');
+                    //console.log(e);
+                    console.log(e.features[0].properties.ID);
+                    console.log(e.features[0].id);
+                    $("#shop").attr("data-id", e.features[0].properties.ID)
+                    ShopUpdate(e.features[0].properties.ID).then((data) => {
                         document.getElementById('shopModal').style.display = 'block'
                     })
                 });
