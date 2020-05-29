@@ -1,4 +1,5 @@
 ﻿
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -29,6 +30,21 @@
 
 </head>
 <body>
+    <div class="w3-sidebar  UIText w3-dark-grey w3-bar-block w3-card w3-animate-right" style="display:none;right:0;" id="rightMenu">
+        <button onclick="closeRightMenu()" class="w3-bar-item w3-button w3-large">Close &times;</button>
+        <h5 class=" w3-padding UIText">USER</h5>
+        <a asp-controller="Game" asp-action="index" class="w3-bar-item w3-button">Map</a>
+        <form asp-controller="Account" asp-action="Logout">
+            <input type="submit" value="Logout" class="w3-bar-item w3-button" />
+        </form>
+
+
+    </div>
+    <div id="statsBar" class="w3-row UIText w3-dark-gray">
+        <div class=" w3-dark-grey w3-right">
+            <button class="w3-button w3-xlarge" onclick="openRightMenu()">&#9776;</button>
+        </div>
+    </div>
     <div id="table">
 
 
@@ -41,8 +57,6 @@
 
                         <th scope="col">#</th>
                         <th scope="col">Email</th>
-                        <th scope="col">Email Confirmed</th>
-                        <th scope="col">Roles</th>
 
                     </tr>
                 </thead>
@@ -52,24 +66,65 @@
                         <tr>
                             <th scope="row">@item.Id</th>
                             <td>@item.UserName</td>
-                            <td>@item.EmailConfirmed</td>
-                            <td>@String.Join(",", item.Roles.ToArray())</td>
                             <td>
-                                @if (item.Roles.Contains())
-                                {
-                                    <a class="w3-bar-item w3-button" asp-action="Edit" asp-route-id="@item.Id">Make Admin</a>
-                                }
-                                else
-                                {
-                                    <a class="w3-bar-item w3-button" asp-action="Edit" asp-route-id="@item.Id">Remove Admin</a>
-                                }
+                                <a asp-action="Details" asp-route-id="@item.Id">Details</a>
                             </td>
                         </tr>
 
-                     }
+
+
+                    }
                 </tbody>
             </table>
         }
+
+
+
+
+
     </div>
+    <div id="CovidBar" class="w3-row UIText w3-dark-grey" style="position: relative;">
+
+    </div>
+
+    <script>
+
+
+        function openRightMenu() {
+            document.getElementById("rightMenu").style.display = "block";
+        }
+
+        function closeRightMenu() {
+            document.getElementById("rightMenu").style.display = "none";
+        }
+
+        document.getElementById("CovidBar").style.top = (document.getElementById("map").offsetHeight - 2) + "px";
+
+        const getData = async () => {
+
+            var response = await fetch('/Home/GetCovidStats');
+            console.log(response)
+            var data = await response.json();
+            return data.rsa
+        }
+
+        getData().then((stats) => {
+            console.log("in dot then")
+            console.log(stats)
+            var list = ''
+            for (const [key, value] of Object.entries(stats)) {
+                list += '<div style="width: 10%" class="w3-col l2 w3-dark-grey w3-center"><p>' + key.toUpperCase() + ': ' + value[0].cases[value[0].cases.length - 1] + '</p></div>'
+            }
+            document.getElementById("CovidBar").innerHTML = list;
+        });
+
+
+
+    </script>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js" integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous"></script>
+
 </body>
 </html>
