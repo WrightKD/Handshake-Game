@@ -60,8 +60,6 @@
                         <td>@item.EmailConfirmed</td>
                         <td>@String.Join(",", item.Roles.ToArray())</td>
                         <td> 
-                            @if(String.Join(",", item.Roles.ToArray()) !="ADMIN"){
-                            <a asp-action="Edit" asp-route-id="@item.Id">Make Admin</a> } 
                             <a asp-action="Index">Back to List</a>
                        </td>
                        </tr>
