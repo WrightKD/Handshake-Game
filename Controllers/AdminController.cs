@@ -45,7 +45,7 @@ namespace Handshake.Controllers
 
         public async Task<IActionResult> Details(int id)
         {
-            if (id == null)
+            if (id == 0)
             {
                  return NotFound();
             }
@@ -63,9 +63,9 @@ namespace Handshake.Controllers
              await _userManager.AddToRoleAsync(user, "Admin");
             _logger.LogInformation(" Admin is Editing role for User :"+  id );
 
-            int userID = Int16.Parse(id);
+            int userID = short.Parse(id);
             ViewBag.Users = await _adminService.GetUserDetails(userID);
-            return View();
+            return RedirectToAction("Index");
         }
 
     }
