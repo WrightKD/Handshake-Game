@@ -50,7 +50,9 @@
         {
             <a asp-controller="Admin" asp-action="Index" class="w3-bar-item w3-button">Admin dashboard</a>
         }
-        <a href="#" class="w3-bar-item w3-button" onclick="buySanitiser()">Logout</a>
+    <form asp-controller="Account" asp-action="Logout">
+        <input type="submit" value="Logout" class="w3-bar-item w3-button" />
+    </form>
     </div>
     <div id="statsBar" class="w3-row UIText ">
         <div class="w3-col m2 w3-dark-grey w3-center" style="width:20%"><p id="playerName">Marcelle</p></div>
