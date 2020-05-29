@@ -1,4 +1,6 @@
-﻿using Newtonsoft.Json;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using RestSharp;
 using RestSharp.Serialization.Json;
@@ -12,6 +14,11 @@ namespace Handshake.Wrappers.CovidStats
 {
     public class CovidStatsService
     {
+        static ILogger _logger;
+        public CovidStatsService(ILogger<CovidStatsService> logger) {
+            _logger = logger;
+        }
+
         public static Stats GetStats()
         {
             // This is the new API with my key, it has a daily request limit of 24
@@ -19,12 +26,16 @@ namespace Handshake.Wrappers.CovidStats
 
             //please use this api for tesing . it has unlimited request but has a data thats abit out of date 
             var client = new RestClient { BaseUrl = new Uri("https://bozzaapi.azurewebsites.net/api/stats") };
-
+            
             var deserial = new JsonDeserializer();
             var request = new RestRequest(Method.GET);
             var response = client.Execute(request);
+            if (!response.IsSuccessful) {
+                _logger.LogError($"Request {request.Method} {request.Resource} was unsuccessful");        
+            }
             var stats = deserial.Deserialize<List<Stats>>(response);
             var data = stats[0];
+            
             return data;
         }
     }

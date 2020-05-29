@@ -82,7 +82,8 @@ namespace Handshake.GameLogic
                 IsContaminated = false,
                 SanitiserCount = 2,
                 MaskCount = 0,
-                Gold = 100
+                Gold = 100,
+                CovidTests = 0
             };
         }
 
@@ -194,9 +195,9 @@ namespace Handshake.GameLogic
 
         public void UseTest()
         {
-            if (player.TestCount > 0)
+            if (player.CovidTests > 0)
             {
-                player.TestCount--;
+                player.CovidTests--;
             }
         }
 
@@ -259,7 +260,7 @@ namespace Handshake.GameLogic
                 if (shop.TestCount > 0 && player.Gold > shop.TestCost)
                 {
                     shop.TestCount--;
-                    player.TestCount++;
+                    player.CovidTests++;
                     player.Gold -= shop.TestCost;
                 }
                 return shop;
@@ -308,7 +309,8 @@ namespace Handshake.GameLogic
                 [Gold] = @{nameof(Player.Gold)},
                 [MaskCount] = @{nameof(Player.MaskCount)},
                 [IsContaminated] = @{nameof(Player.IsContaminated)},
-                [IsInfected] = @{nameof(Player.IsInfected)}
+                [IsInfected] = @{nameof(Player.IsInfected)},
+                [CovidTests] = @{nameof(Player.CovidTests)}
                 WHERE [Id] = Id", player);
             }
 

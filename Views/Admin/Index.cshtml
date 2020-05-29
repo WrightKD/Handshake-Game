@@ -1,0 +1,156 @@
+﻿
+@{
+    ViewData["Title"] = "Admin";
+}
+
+
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset='utf-8' />
+    <title>Admin Dashboard</title>
+    <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+    <link href='https://api.mapbox.com/mapbox-gl-js/v1.8.1/mapbox-gl.css' rel='stylesheet' />
+    <link rel="stylesheet" href="css/w3.css">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+        }
+
+        #table {
+            position: absolute;
+            top: 50px;
+            bottom: 50px;
+            width: 100%;
+        }
+
+        .UIText {
+            font-family: "Great Vibes", cursive;
+        }
+    </style>
+
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+
+</head>
+<body>
+    <div class="w3-sidebar  UIText w3-dark-grey w3-bar-block w3-card w3-animate-right" style="display:none;right:0;" id="rightMenu">
+        <button onclick="closeRightMenu()" class="w3-bar-item w3-button w3-large">Close &times;</button>
+        <h5 class=" w3-padding UIText">SHOP</h5>
+        <a href="#" class="w3-bar-item w3-button" onclick="sanitise()">Sanitizer: 10 Gold</a>
+        <a href="#" class="w3-bar-item w3-button" onclick="getShopInventory()">Mask: 50 Gold</a>
+        <h5 class=" w3-padding UIText">USER</h5>
+
+
+        @if (User.IsInRole("ADMIN"))
+        {
+            <a asp-controller="AdminDashboard" asp-action="ListUsers" class="w3-bar-item w3-button">Admin dashboard</a>
+        }
+
+
+        <form asp-controller="Account" asp-action="Logout">
+            <input type="submit" value="Logout" class="w3-bar-item w3-button" />
+        </form>
+
+
+    </div>
+    <div id="statsBar" class="w3-row UIText ">
+        <div class="w3-col m2 w3-dark-grey w3-center"><p>XP: 100</p></div>
+        <div class="w3-col m2 w3-dark-grey w3-center"><p>Body: Healthy</p></div>
+        <div class="w3-col m2 w3-dark-grey w3-center"><p>Hands: Clean</p></div>
+        <div class="w3-col m2 w3-dark-grey w3-center"><p>Sanitizer: 10x</p></div>
+        <div class="w3-col m2 w3-dark-grey w3-center"><p>Gold: 100</p></div>
+        <div class="w3-col m2 w3-dark-grey w3-center">
+            <button class="w3-button w3-xlarge" onclick="openRightMenu()">&#9776;</button>
+        </div>
+    </div>
+    <div id="table">
+
+
+        @if (ViewBag.Users != null)
+        {
+
+            <table class="table table-striped table-dark">
+                <thead>
+                    <tr>
+                       
+                        <th scope="col">#</th>
+                        <th scope="col">Email</th>
+
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in ViewBag.Users)
+                    {
+                       <tr>
+                        <th scope="row">@item.Id</th>
+                        <td>@item.UserName</td>
+                        <td>
+                            <a asp-action="Details" asp-route-id="@item.Id">Details</a> 
+                       </td>
+                       </tr>
+
+
+
+                    }
+                </tbody>
+            </table>
+        }
+
+
+
+
+
+    </div>
+    <div id="CovidBar" class="w3-row UIText w3-dark-grey" style="position: relative;">
+
+    </div>
+
+    <script>
+
+
+        function openRightMenu() {
+            document.getElementById("rightMenu").style.display = "block";
+        }
+
+        function closeRightMenu() {
+            document.getElementById("rightMenu").style.display = "none";
+        }
+
+        document.getElementById("CovidBar").style.top = (document.getElementById("map").offsetHeight - 2) + "px";
+
+        const getData = async () => {
+
+            var response = await fetch('/Home/GetCovidStats');
+            console.log(response)
+            var data = await response.json();
+            return data.rsa
+        }
+
+        getData().then((stats) => {
+            console.log("in dot then")
+            console.log(stats)
+            var list = ''
+            for (const [key, value] of Object.entries(stats)) {
+                list += '<div style="width: 10%" class="w3-col l2 w3-dark-grey w3-center"><p>' + key.toUpperCase() + ': ' + value[0].cases[value[0].cases.length - 1] + '</p></div>'
+            }
+            document.getElementById("CovidBar").innerHTML = list;
+        });
+
+
+
+    </script>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js" integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous"></script>
+
+</body>
+</html>
+
+
+

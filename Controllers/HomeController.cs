@@ -12,6 +12,8 @@ using HandshakeGame.Wrappers.ISS;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using WebApp.Models;
+using Microsoft.AspNetCore.Identity;
+using Handshake.Wrappers.Mapbox;
 
 // For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -19,17 +21,23 @@ namespace HandshakeGame.Controllers
 {
     public class HomeController : Controller
     {
-        IDBModel<User, UserCreate> users;
+        
         ILogger logger;
-        public HomeController(ILogger<HomeController> logger, IDBModel<User, UserCreate> users)
+        public HomeController(ILogger<HomeController> logger)
         {
-            this.users = users;
+       
             this.logger = logger;
         }
 
         // GET: /<controller>/
-        public IActionResult Index()
+        public  IActionResult Index()
         {
+
+            if(User.Identity.Name is null)
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
             return View();
         }
 
@@ -67,6 +75,10 @@ namespace HandshakeGame.Controllers
 
             var lat = "-26.1796856";
             var lon = "28.0509079";
+
+            var location = MapboxService.GetLocationDetails(lon, lat);
+
+            var province = MapboxService.GetProvince(location);
 
             var hospitals = PlaceService.GetPlaces("supermarket", "1500", lat, lon);
 
@@ -115,6 +127,15 @@ namespace HandshakeGame.Controllers
         public IActionResult Error()
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+        }
+
+        public IActionResult AdminLogin()
+        {
+            //var db = Database.Open("WebPagesMovies");
+            //var selectedData = db.Query("SELECT * FROM Movies");
+            //var grid = new WebGrid(source: users.GetAll());
+            //Console.WriteLine("I Am here : " + users.GetAll());
+            return View("~/Views/Manage/AdminDashboard.cshtml");
         }
     }
 }

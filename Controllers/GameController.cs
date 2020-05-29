@@ -122,7 +122,7 @@ namespace Handshake.Controllers
             var data = new Dictionary<string, string>
             {
                 {"shopTestCount",  shop.TestCount.ToString()},
-                {"playerTestCount",  _gameService.player.TestCount.ToString()},
+                {"playerTestCount",  _gameService.player.CovidTests.ToString()},
                 {"playerGold",  _gameService.player.Gold.ToString()}
             };
             return new JsonResult(data);

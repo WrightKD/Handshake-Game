@@ -1,4 +1,6 @@
-﻿using RestSharp;
+﻿using Handshake.Wrappers;
+using Microsoft.Extensions.Logging;
+using RestSharp;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,6 +9,12 @@ namespace HandshakeGame.Wrappers.ISS
 {
     public class ISS
     {
+        static ILogger _logger;
+
+        public ISS(ILogger<ISS> logger) {
+            _logger = logger;
+        }
+
         private static T GetResource<T>(string description, string resource, Tuple<string, string>[] parameters = null) where T : new()
         {
             var client = new RestClient { BaseUrl = new Uri("http://api.open-notify.org") };
@@ -18,6 +26,9 @@ namespace HandshakeGame.Wrappers.ISS
                     request.AddParameter(param.Item1, param.Item2);
 
             var response = client.Execute<T>(request);
+            if (!response.IsSuccessful) {
+                _logger.LogError($"Request {request.Method} {request.Resource} was unsuccessful");
+            }
             var content = response.Content;
 
             if (response.ErrorException != null)

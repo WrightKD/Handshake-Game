@@ -1,0 +1,75 @@
+
+
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset='utf-8' />
+    <title>Admin Dashboard</title>
+    <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+    <link href='https://api.mapbox.com/mapbox-gl-js/v1.8.1/mapbox-gl.css' rel='stylesheet' />
+    <link rel="stylesheet" href="css/w3.css">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+        }
+
+        #table {
+            position: absolute;
+            top: 50px;
+            bottom: 50px;
+            width: 100%;
+        }
+
+        .UIText {
+            font-family: "Great Vibes", cursive;
+        }
+    </style>
+
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+
+</head>
+<body>
+     <div id="table">
+
+
+        @if (ViewBag.Users != null)
+        {
+
+            <table class="table table-striped table-dark">
+                <thead>
+                    <tr>
+                       
+                        <th scope="col">#</th>
+                        <th scope="col">Email</th>
+                        <th scope="col">Email Confirmed</th>
+                        <th scope="col">Roles</th>
+
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in ViewBag.Users)
+                    {
+                       <tr>
+                        <th scope="row">@item.Id</th>
+                        <td>@item.UserName</td>
+                        <td>@item.EmailConfirmed</td>
+                        <td>@String.Join(",", item.Roles.ToArray())</td>
+                        <td> 
+                            <a asp-action="Index">Back to List</a>
+                       </td>
+                       </tr>
+
+
+
+                    }
+                </tbody>
+            </table>
+        }
+    </div>
+</body>
+</html>
