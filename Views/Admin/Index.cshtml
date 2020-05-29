@@ -56,7 +56,10 @@
                     <tr>
 
                         <th scope="col">#</th>
+                        <th scope="col">User</th>
                         <th scope="col">Email</th>
+                        <th scope="col">Email Confirmed</th>
+                        <th scope="col">Roles</th>
 
                     </tr>
                 </thead>
@@ -66,8 +69,15 @@
                         <tr>
                             <th scope="row">@item.Id</th>
                             <td>@item.UserName</td>
+                            <td>@item.Email</td>
+                            <td>@item.EmailConfirmed</td>
+                            <td>@String.Join(",", item.Roles.ToArray())</td>
                             <td>
-                                <a asp-action="Details" asp-route-id="@item.Id">Details</a>
+
+                                <a class="w3-bar-item w3-button" asp-action="Edit" asp-route-id="@item.Id">Make Admin</a>
+
+                                <a class="w3-bar-item w3-button" asp-action="Edit" asp-route-id="@item.Id">Remove Admin</a>
+
                             </td>
                         </tr>
 
@@ -76,6 +86,7 @@
                     }
                 </tbody>
             </table>
+
         }
 
 

@@ -108,9 +108,9 @@ namespace Handshake.GameLogic
             var province = MapboxService.GetProvince(location);
             if (province == "Gauteng")
             {
-                var a = CovidStatsService.GetStats();
-                var b = a.RSA.GP[0].Cases[a.RSA.GP[0].Cases.Count - 1];
-                int x = (int)Math.Log10(b);
+                var stats = CovidStatsService.GetStats();
+                var numInfected = stats.RSA.GP[0].Cases[stats.RSA.GP[0].Cases.Count - 1];
+                int x = (int)Math.Log10(numInfected);
                 nPCAdjustedInfectedChance = 0.1 * x + nPCBaseInfectedChance - nPCInfectedChanceOffset;
             }
             else

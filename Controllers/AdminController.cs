@@ -58,10 +58,19 @@ namespace Handshake.Controllers
 
         public async Task<IActionResult> Edit(string id)
         {
-            
-             var user = await _userManager.FindByIdAsync(id);
-             await _userManager.AddToRoleAsync(user, "Admin");
-            _logger.LogInformation(" Admin is Editing role for User :"+  id );
+            var user = await _userManager.FindByIdAsync(id);
+            var inRole = await _userManager.IsInRoleAsync(user, "Admin");
+
+            if (inRole)
+            {
+                await _userManager.RemoveFromRoleAsync(user, "Admin");
+            }
+            else
+            {
+                await _userManager.AddToRoleAsync(user, "Admin");
+            }
+
+            _logger.LogInformation(" Admin is Editing role for User :" + id);
 
             int userID = short.Parse(id);
             ViewBag.Users = await _adminService.GetUserDetails(userID);

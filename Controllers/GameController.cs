@@ -18,14 +18,16 @@ namespace Handshake.Controllers
 {
     public class GameController : Controller
     {
-        private UserManager<ApplicationUser> _userManager;
-        private GameService _gameService;
+        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly GameService _gameService;
+        private readonly ILogger _logger;
 
-        public GameController( GameService gS, UserManager<ApplicationUser> userManager)
+
+        public GameController( GameService gS, UserManager<ApplicationUser> userManager, ILogger<AccountController> logger)
         {
             _gameService = gS;
             _userManager = userManager;
-
+            _logger = logger;
         }
 
         public async Task<IActionResult> Index()
@@ -44,34 +46,40 @@ namespace Handshake.Controllers
         {
             var user = await _userManager.FindByIdAsync(_gameService.player.Id.ToString());
             _gameService.player.Name = user.UserName;
+            _logger.LogInformation("GetPlayerData requested from backend.");
             return new JsonResult(_gameService.player);
         }
 
         public IActionResult GetNPCData()
         {
+            _logger.LogInformation("GetPlayerData requested from backend.");
             return new JsonResult(_gameService.NPCs);
         }
 
         public IActionResult InitialiseNPCs(double latitude, double longitude)
         {
             _gameService.RandomiseNPCLocations(latitude, longitude);
+            _logger.LogInformation("NPCs initialised.");
             return new JsonResult(_gameService.NPCs);
         }
 
         public bool IsNPCReady(int npcId)
         {
+            _logger.LogInformation("IsNPCReady requested from backend.");
             return _gameService.IsNPCReady(npcId);
         }
 
         public IActionResult ShakeHand(int npcId)
         {
             _gameService.ShakeHand(npcId);
+            _logger.LogInformation("Player shaken hand with NPC.");
             return new JsonResult(_gameService.player);
         }
 
         public IActionResult UseSanitiser()
         {
             _gameService.UseSanitiser();
+            _logger.LogInformation("Player used sanitiser.");
             return new JsonResult(new Dictionary<string, string> 
             {
                 {"sanitiserCount", _gameService.player.SanitiserCount.ToString() },
@@ -82,16 +90,19 @@ namespace Handshake.Controllers
         public IActionResult UseMask()//change name
         {
             _gameService.UseMask();
+            _logger.LogInformation("Player used mask.");
             return new JsonResult(_gameService.maskDuration);
         }
         public bool UseTest()//change name
         {
             _gameService.UseTest();
+            _logger.LogInformation("Player used test.");
             return _gameService.player.IsInfected;
         }
 
         public IActionResult GetShopInventory(int shopId)
         {
+            _logger.LogInformation("GetShopInventory requested from backend.");
             return new JsonResult(_gameService.GetShopInventory(shopId));
         }
 
@@ -104,6 +115,7 @@ namespace Handshake.Controllers
                 {"playerSanitiserCount",  _gameService.player.SanitiserCount.ToString()},
                 {"playerGold",  _gameService.player.Gold.ToString()}
             };
+            _logger.LogInformation("Sanitiser bought.");
             return new JsonResult(data);
         }
 
@@ -116,6 +128,7 @@ namespace Handshake.Controllers
                 {"playerMaskCount",  _gameService.player.MaskCount.ToString()},
                 {"playerGold",  _gameService.player.Gold.ToString()}
             };
+            _logger.LogInformation("Mask bought.");
             return new JsonResult(data);
         }
         public IActionResult BuyTest(int shopId)
@@ -127,6 +140,7 @@ namespace Handshake.Controllers
                 {"playerTestCount",  _gameService.player.CovidTests.ToString()},
                 {"playerGold",  _gameService.player.Gold.ToString()}
             };
+            _logger.LogInformation("Test bought.");
             return new JsonResult(data);
         }
 
@@ -153,7 +167,7 @@ namespace Handshake.Controllers
                 shopId++;
             }
             var geolocation = Converter.GetGeoJSON(coordinates, properties);
-
+            _logger.LogInformation("Shops intialised.");
             return new JsonResult(geolocation);
         }
     }
