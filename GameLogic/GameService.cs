@@ -6,6 +6,8 @@ using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using Dapper;
 using Handshake.Models;
+using Handshake.Wrappers.CovidStats;
+using Handshake.Wrappers.Mapbox;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using WebApp.Models;
@@ -66,7 +68,7 @@ namespace Handshake.GameLogic
             nPCBaseInfectedChance = 0.5;
             nPCInfectedChanceOffset = 0.3;
             nPCRefreshTime = 1;
-            GenerateNPCs(100);
+            //GenerateNPCs(100);
             //TEMPGenerateShop(1);
         }
 
@@ -98,10 +100,23 @@ namespace Handshake.GameLogic
             //player.Gold = 10000000;
             await UpdatePlayerAsync(player);
         }
-        private void GenerateNPCs(int numberToSpawn)
+        private void GenerateNPCs(int numberToSpawn, double lat, double lon)
         {
-            int x = (int)Math.Log10(1000);
-            double nPCAdjustedInfectedChance = 0.1 * x + nPCBaseInfectedChance - nPCInfectedChanceOffset;
+            //var lat = "-26.1796856";
+            //var lon = "28.0509079";
+            double nPCAdjustedInfectedChance;
+            var location = MapboxService.GetLocationDetails($"{lon}", $"{lat}");
+
+            var province = MapboxService.GetProvince(location);
+            if (province == "Gauteng")
+            {
+                var a = CovidStatsService.GetStats();
+                var b = a.RSA.GP[0].Cases[a.RSA.GP[0].Cases.Count - 1];
+                int x = (int)Math.Log10(b);
+                nPCAdjustedInfectedChance = 0.1 * x + nPCBaseInfectedChance - nPCInfectedChanceOffset;
+            }
+            else
+                nPCAdjustedInfectedChance = nPCBaseInfectedChance;
 
             for (int i = 0; i < numberToSpawn; i++)
             {
@@ -111,6 +126,7 @@ namespace Handshake.GameLogic
 
         public void RandomiseNPCLocations(double playerLatitude, double playerLongitude)
         {
+            GenerateNPCs(50, playerLatitude, playerLongitude);
             foreach (var npc in NPCs)
             {
                 npc.Latitude = playerLatitude + GetRandomDouble();
