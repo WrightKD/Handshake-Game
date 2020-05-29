@@ -170,8 +170,6 @@
     <script src='https://api.mapbox.com/mapbox-gl-js/v1.8.1/mapbox-gl.js'></script>
 
     <script>
-        //var playerLat = -26.170458
-        //var playerLong = 28.0519267
         var playerLat = -26.1796856
         var playerLong = 28.0509079
         var gameZoom = 16
@@ -234,14 +232,11 @@
         const getData = async () => {
 
             var response = await fetch('/Home/GetCovidStats');
-            console.log(response)
             var data = await response.json();
             return data.rsa
         }
 
         getData().then((stats) => {
-            console.log("in dot then")
-            console.log(stats)
             var list = ''
             for (const [key, value] of Object.entries(stats)) {
                 list += '<div style="width: 10%" class="w3-col l2 w3-dark-grey w3-center"><p>' + key.toUpperCase() + ': ' + value[0].cases[value[0].cases.length - 1] + '</p></div>'
@@ -252,36 +247,30 @@
         const getPlayerData = async () => {
             var response = await fetch('/Game/GetPlayerData');
             var data = await response.json();
-            console.log(data);
             return data;
         }
 
         const getNPCData = async () => {
             var response = await fetch('/Game/GetNPCData');
             var data = await response.json();
-            // console.log(data);
             return data;
         }
 
         const initialiseNPCs = async () => {
             var response = await fetch('/Game/InitialiseNPCs?latitude=' + playerLat + '&longitude=' + playerLong);
             var data = await response.json();
-            //console.log(data);
             return data;
         }
 
         const isNPCReady = async (npcId) => {
             var response = await fetch('/Game/IsNPCReady?npcId=' + npcId);
             var data = await response.json();
-            //console.log(data);
             return data;
         }
 
         const shakeHand = async (npcId) => {
-            console.log("In Fucntio id: " + npcId + '/Game/ShakeHand?npcId=${npcId}');
             var response = await fetch('/Game/ShakeHand?npcId=' + npcId);
             var data = await response.json();
-            //console.log(data);
             document.getElementById('playerInfo').style.display = 'none';
             UpdateUI();
             return data;
@@ -291,7 +280,6 @@
             var response = await fetch('/Game/UseSanitiser');
             var data = await response.json();
             alert("You've been sanitised")
-            console.log("Infected: " + data.isInfected + "\nSanitiser: " + data.sanitiserCount);
             UpdateUI();
             return data;
         }
@@ -304,7 +292,6 @@
                 setTimeout(function () { $("#UM").hide(); }, maskDuration);
             }
             timeOut()
-            // console.log("Infected: " + data.isInfected + "\nSanitiser: " + data.sanitiserCount);
             UpdateUI();
             return data;
         }
@@ -316,9 +303,8 @@
                 alert("You've been infected")
             }
             else {
-                alert("Your safe")
+                alert("You're safe")
             }
-            // console.log("Infected: " + data.isInfected + "\nSanitiser: " + data.sanitiserCount);
             UpdateUI();
             return data;
         }
@@ -326,16 +312,12 @@
         const getShopInventory = async (shopId) => {
             var response = await fetch('/Game/GetShopInventory?shopId=' + shopId);
             var data = await response.json();
-            console.log("ShopInventory: ");
-            console.log(data);
             return data;
         }
 
         const buySanitiser = async (shopId) => {
             var response = await fetch('/Game/BuySanitiser?shopId=' + shopId);
             var data = await response.json();
-            console.log("BuySanitiser: ");
-            console.log(data);
             ShopUpdate(shopId)
             UpdateUI();
             return data;
@@ -344,8 +326,6 @@
         const buyMask = async (shopId) => {
             var response = await fetch('/Game/BuyMask?shopId=' + shopId);
             var data = await response.json();
-            console.log("BuyMask: ");
-            console.log(data);
             ShopUpdate(shopId)
             UpdateUI();
             return data;
@@ -354,8 +334,6 @@
         const buyTest = async (shopId) => {
             var response = await fetch('/Game/BuyTest?shopId=' + shopId);
             var data = await response.json();
-            console.log("BuyTest: ");
-            console.log(data);
             ShopUpdate(shopId)
             UpdateUI();
             return data;
@@ -364,16 +342,12 @@
         const initialiseShops = async () => {
             var response = await fetch('/Game/InitialiseShops?latitude=' + playerLat + '&longitude=' + playerLong);
             var data = await response.json();
-            console.log("Shops: ");
             ShopUpdate(shakeHand)
-            console.log(data);
             return data;
         }
 
         const UpdateUI = async () => {
             getPlayerData().then((data) => {
-                console.log("PLAYER DATA ");
-                console.log(data);
                 $("#playerName").html(data.name);
                 $("#gold").html("Gold: " + data.gold);
                 $("#level").html("Level: " + data.level);
@@ -386,7 +360,6 @@
 
         const ShopUpdate = async (id) => {
             getShopInventory(id).then((data) => {
-                console.log(data)
                 $("#shop").html(data.name)
                 $("#sanQ").html("x" + data.sanitiserCount)
                 $("#sanC").html("G" + data.sanitiserCost)
@@ -403,7 +376,6 @@
             //inits all NPCs
             UpdateUI();
             initialiseNPCs().then((data) => {
-                console.log(data[0]);
                 map.addSource('npcs_source', {
                     'type': 'geojson',
                     'data': {
@@ -434,15 +406,12 @@
                     'type': 'symbol',
                     'source': 'npcs_source',
                     'layout': {
-                        'icon-image': 'marker-15', //this needs to be changed
+                        'icon-image': 'marker-15',
                         'icon-size': 3
                     }
                 });
 
-                // Center the map on the coordinates of any clicked symbol from the 'symbols' layer.
                 map.on('click', 'npcs_layer', function (e) {
-                    //map.flyTo({ center: e.features[0].geometry.coordinates });
-                    console.log($("#level").html().split(" ")[1])
                     $("#Username").html(e.features[0].properties.description.split(/<\/?[^>]+(>|$)/g)[2])
                     $("#Traits").html(e.features[0].properties.description.split(/<\/?[^>]+(>|$)/g)[6])
                     if ($("#level").html().split(" ")[1] >= 10) {
@@ -461,12 +430,10 @@
                     });
                 });
 
-                // Change the cursor to a pointer when the it enters a feature in the 'symbols' layer.
                 map.on('mouseenter', 'npcs_layer', function (e) {
                     map.getCanvas().style.cursor = 'pointer';
                 });
 
-                // Change it back to a pointer when it leaves.
                 map.on('mouseleave', 'npcs_layer', function () {
                     map.getCanvas().style.cursor = '';
                 });
@@ -474,8 +441,6 @@
 
             //inits shops
             initialiseShops().then((data) => {
-                console.log('Shop data: ')
-                console.log(data);
                 map.addSource('shops_source', {
                     'type': 'geojson',
                     'data': data
@@ -491,25 +456,17 @@
                     }
                 });
 
-                // Center the map on the coordinates of any clicked symbol from the 'symbols' layer.
                 map.on('click', 'shops_layer', function (e) {
-                    //add functionality here
-                    console.log('asdf');
-                    //console.log(e);
-                    console.log(e.features[0].properties.ID);
-                    console.log(e.features[0].id);
                     $("#shop").attr("data-id", e.features[0].properties.ID)
                     ShopUpdate(e.features[0].properties.ID).then((data) => {
                         document.getElementById('shopModal').style.display = 'block'
                     })
                 });
 
-                // Change the cursor to a pointer when the it enters a feature in the 'symbols' layer.
                 map.on('mouseenter', 'shops_layer', function (e) {
                     map.getCanvas().style.cursor = 'pointer';
                 });
 
-                // Change it back to a pointer when it leaves.
                 map.on('mouseleave', 'shops_layer', function () {
                     map.getCanvas().style.cursor = '';
                 });

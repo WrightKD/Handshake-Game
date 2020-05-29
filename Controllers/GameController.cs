@@ -132,8 +132,6 @@ namespace Handshake.Controllers
 
         public IActionResult InitialiseShops(double latitude, double longitude)
         {
-            //var lat = "-26.1796856";
-            // var lon = "28.0509079";
             var lat = latitude.ToString();
             var lon = longitude.ToString();
 

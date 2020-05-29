@@ -102,8 +102,6 @@ namespace Handshake.GameLogic
         }
         private void GenerateNPCs(int numberToSpawn, double lat, double lon)
         {
-            //var lat = "-26.1796856";
-            //var lon = "28.0509079";
             double nPCAdjustedInfectedChance;
             var location = MapboxService.GetLocationDetails($"{lon}", $"{lat}");
 

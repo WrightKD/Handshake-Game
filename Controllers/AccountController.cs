@@ -1,5 +1,6 @@
 using System.Security.Claims;
 using System.Threading.Tasks;
+using Handshake.GameLogic;
 using Handshake.Models;
 using HandshakeGame.Controllers;
 using Microsoft.AspNetCore.Authentication;
@@ -18,14 +19,16 @@ namespace Handshake.Controllers
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly RoleManager<ApplicationRole> _roleManager;
+        private readonly GameService _gameService;
         private readonly ILogger _logger;
 
-        public AccountController(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager, RoleManager<ApplicationRole> roleManager, ILogger<AccountController> logger)
+        public AccountController(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager, RoleManager<ApplicationRole> roleManager, GameService gameService, ILogger<AccountController> logger)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _logger = logger;
             _roleManager = roleManager;
+            _gameService = gameService;
         }
 
         [TempData]
@@ -132,6 +135,7 @@ namespace Handshake.Controllers
         public async Task<IActionResult> Logout()
         {
             await _signInManager.SignOutAsync();
+            await _gameService.SavePlayerData();
             _logger.LogInformation("User logged out.");
             return RedirectToAction("Login", "Account");
         }
