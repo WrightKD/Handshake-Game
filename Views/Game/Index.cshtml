@@ -334,6 +334,7 @@
             var data = await response.json();
             console.log("BuySanitiser: ");
             console.log(data);
+            ShopUpdate(shopId)
             UpdateUI();
             return data;
         }
@@ -343,7 +344,7 @@
             var data = await response.json();
             console.log("BuyMask: ");
             console.log(data);
-            ShopUpdate(shakeHand)
+            ShopUpdate(shopId)
             UpdateUI();
             return data;
         }
@@ -353,7 +354,7 @@
             var data = await response.json();
             console.log("BuyTest: ");
             console.log(data);
-            ShopUpdate(shakeHand)
+            ShopUpdate(shopId)
             UpdateUI();
             return data;
         }
