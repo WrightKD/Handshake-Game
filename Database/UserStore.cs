@@ -44,10 +44,10 @@ namespace Handshake.Database
                 var Contaminated = player.IsContaminated ? 1 : 0;
 
                 await connection.QuerySingleOrDefaultAsync($@"INSERT INTO [ApplicationPlayer] ([Id], [ScoreCurrent], [ScoreTotal], [Level],
-                [ScorePerLevel], [SanitiserCount], [Gold], [MaskCount], [IsContaminated], [IsInfected])
+                [ScorePerLevel], [SanitiserCount], [Gold], [MaskCount], [IsContaminated], [IsInfected], [CovidTests])
                 VALUES ({player.Id},{player.ScoreCurrent}, {player.ScoreTotal}, {player.Level},
                 {player.ScorePerLevel}, {player.SanitiserCount}, {player.Gold},
-                {player.MaskCount}, {Contaminated}, {Infected});");
+                {player.MaskCount}, {Contaminated}, {Infected}, {player.CovidTests});");
 
             }
 

@@ -21,7 +21,7 @@ namespace Handshake.GameLogic
         //player vars
         private readonly int handShakePoints;
         private readonly double playerBaseInfectionChance; //modified by weather/going to shop/work
-        private readonly double maskDuration;
+        public readonly double maskDuration;
         private bool isMaskOn;
         private DateTime timeMaskUsed;
         //shop vars
@@ -37,12 +37,14 @@ namespace Handshake.GameLogic
         private readonly Random infectionRoll;
         private readonly double valForRandomDouble;
         private readonly double nPCBaseInfectedChance; //affected by regional stats
+        private readonly double nPCInfectedChanceOffset;
         private readonly double nPCRefreshTime;
 
         public GameService(IConfiguration configuration) 
         {
             Configuration = configuration;
             NPCs = new List<NPC>();
+            shops = new List<Shop>();
             //player config
             handShakePoints = 1;
             playerBaseInfectionChance = 0.5;
@@ -55,16 +57,17 @@ namespace Handshake.GameLogic
             maskInitialCount = 1;
             maskCost = 50;
             testInitialCount = 1;
-            testCost = 50;
+            testCost = 20;
             shopResetMinutes = 2;
             //npc config
             spawnRoll = new Random((int)DateTime.Now.Ticks);
             infectionRoll = new Random((int)DateTime.Now.Ticks);
             valForRandomDouble = 0.01;
             nPCBaseInfectedChance = 0.5;
+            nPCInfectedChanceOffset = 0.3;
             nPCRefreshTime = 1;
             GenerateNPCs(100);
-            TEMPGenerateShop(1);
+            //TEMPGenerateShop(1);
         }
 
         public Player GetDefaultPlayer()
@@ -79,7 +82,8 @@ namespace Handshake.GameLogic
                 IsContaminated = false,
                 SanitiserCount = 2,
                 MaskCount = 0,
-                Gold = 100
+                Gold = 100,
+                CovidTests = 0
             };
         }
 
@@ -96,9 +100,12 @@ namespace Handshake.GameLogic
         }
         private void GenerateNPCs(int numberToSpawn)
         {
+            int x = (int)Math.Log10(1000);
+            double nPCAdjustedInfectedChance = 0.1 * x + nPCBaseInfectedChance - nPCInfectedChanceOffset;
+
             for (int i = 0; i < numberToSpawn; i++)
             {
-                NPCs.Add(new NPC(i, nPCBaseInfectedChance, GetNPCName(i), GetNPCTraits(i)));
+                NPCs.Add(new NPC(i, nPCAdjustedInfectedChance, GetNPCName(i), GetNPCTraits(i)));
             }
         }
 
@@ -188,9 +195,9 @@ namespace Handshake.GameLogic
 
         public void UseTest()
         {
-            if (player.TestCount > 0)
+            if (player.CovidTests > 0)
             {
-                player.TestCount--;
+                player.CovidTests--;
             }
         }
 
@@ -253,7 +260,7 @@ namespace Handshake.GameLogic
                 if (shop.TestCount > 0 && player.Gold > shop.TestCost)
                 {
                     shop.TestCount--;
-                    player.TestCount++;
+                    player.CovidTests++;
                     player.Gold -= shop.TestCost;
                 }
                 return shop;
@@ -264,13 +271,9 @@ namespace Handshake.GameLogic
             }
         }
 
-        private void TEMPGenerateShop(int numberToSpawn)
+        public void AddShop(int id, string name)
         {
-            shops = new List<Shop>();
-            for (int i = 0; i < numberToSpawn; i++)
-            {
-                shops.Add(new Shop(i,sanitiserInitialCount, sanitiserCost, maskInitialCount, maskCost, testInitialCount, testCost));
-            }
+            shops.Add(new Shop(id, name, sanitiserInitialCount, sanitiserCost, maskInitialCount, maskCost, testInitialCount, testCost));
         }
 
         private double GetRandomDouble()
@@ -306,7 +309,8 @@ namespace Handshake.GameLogic
                 [Gold] = @{nameof(Player.Gold)},
                 [MaskCount] = @{nameof(Player.MaskCount)},
                 [IsContaminated] = @{nameof(Player.IsContaminated)},
-                [IsInfected] = @{nameof(Player.IsInfected)}
+                [IsInfected] = @{nameof(Player.IsInfected)},
+                [CovidTests] = @{nameof(Player.CovidTests)}
                 WHERE [Id] = Id", player);
             }
 

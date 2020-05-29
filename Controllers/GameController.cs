@@ -80,12 +80,12 @@ namespace Handshake.Controllers
         public IActionResult UseMask()//change name
         {
             _gameService.UseMask();
-            return new JsonResult(_gameService.player.MaskCount);
+            return new JsonResult(_gameService.maskDuration);
         }
-        public IActionResult UseTest()//change name
+        public bool UseTest()//change name
         {
             _gameService.UseTest();
-            return new JsonResult(_gameService.player.IsInfected);
+            return _gameService.player.IsInfected;
         }
 
         public IActionResult GetShopInventory(int shopId)
@@ -122,7 +122,7 @@ namespace Handshake.Controllers
             var data = new Dictionary<string, string>
             {
                 {"shopTestCount",  shop.TestCount.ToString()},
-                {"playerTestCount",  _gameService.player.TestCount.ToString()},
+                {"playerTestCount",  _gameService.player.CovidTests.ToString()},
                 {"playerGold",  _gameService.player.Gold.ToString()}
             };
             return new JsonResult(data);
@@ -139,10 +139,14 @@ namespace Handshake.Controllers
             var properties = new List<Dictionary<string, string>>();
             var coordinates = new List<List<double>>();
 
+            int shopId = 0;
             foreach (var item in shops.Results)
             {
+                _gameService.AddShop(shopId, item.Name);
+                shopId++;
                 var currentProperties = new Dictionary<string, string>
                 {
+                    {"ID", shopId.ToString() },
                     {"name", item.Name }
                 };
                 properties.Add(currentProperties);

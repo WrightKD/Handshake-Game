@@ -1,3 +1,4 @@
+/****** Script for SelectTopNRows command from SSMS  ******/
 use master;
 go
 alter database HandshakeDB set single_user with rollback immediate
@@ -84,5 +85,5 @@ CREATE TABLE [dbo].[ApplicationPlayer](
 	[MaskCount] [int] NULL,
 	[IsContaminated] [bit] NOT NULL,
 	[IsInfected] [bit] NOT NULL,
-
+	[CovidTests] [int] NOT NULL
 ) 

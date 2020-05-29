@@ -36,7 +36,19 @@
         <a href="#" class="w3-bar-item w3-button" onclick="sanitise()">Sanitizer: 10 Gold</a>
         <a href="#" class="w3-bar-item w3-button" onclick="getShopInventory()">Mask: 50 Gold</a>
         <h5 class=" w3-padding UIText">USER</h5>
-        <a href="#" class="w3-bar-item w3-button" onclick="buySanitiser()">Logout</a>
+       
+
+        @if (User.IsInRole("ADMIN"))
+        {
+            <a asp-controller="Admin" asp-action="Index" class="w3-bar-item w3-button">Admin dashboard</a> 
+        }
+
+
+        <form asp-controller="Account" asp-action="Logout">
+            <input type="submit" value="Logout"  class="w3-bar-item w3-button"/>
+        </form>
+
+
     </div>
     <div id="statsBar" class="w3-row UIText ">
         <div class="w3-col m2 w3-dark-grey w3-center"><p>XP: 100</p></div>

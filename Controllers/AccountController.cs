@@ -1,10 +1,7 @@
-﻿using System;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using Handshake.Database;
 using Handshake.Models;
 using HandshakeGame.Controllers;
-using HandshakeGame.Models;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -15,7 +12,7 @@ using WebApp.Models.AccountViewModels;
 
 namespace Handshake.Controllers
 {
-    [Authorize]
+
     public class AccountController : Controller
     {
         private readonly UserManager<ApplicationUser> _userManager;
@@ -50,6 +47,7 @@ namespace Handshake.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Login(LoginViewModel model, string returnUrl = null)
         {
+            _logger.LogInformation("Login");
             ViewData["ReturnUrl"] = returnUrl;
             if (ModelState.IsValid)
             {
@@ -101,13 +99,12 @@ namespace Handshake.Controllers
             ViewData["ReturnUrl"] = returnUrl;
             if (ModelState.IsValid)
             {
-                var user = new ApplicationUser { UserName = model.Email, Email = model.Email };
+                var user = new ApplicationUser {UserName = model.UserName, Email = model.Email};
                 var result = await _userManager.CreateAsync(user, model.Password);
 
 
                 if (result.Succeeded)
                 {
-                    _logger.LogInformation("User created a new account with password.");
 
                     //var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
                     //var callbackUrl = Url.EmailConfirmationLink(user.Id, code, Request.Scheme);
@@ -135,7 +132,7 @@ namespace Handshake.Controllers
         {
             await _signInManager.SignOutAsync();
             _logger.LogInformation("User logged out.");
-            return RedirectToAction(nameof(HomeController.Index), "Home");
+            return RedirectToAction("Login", "Account");
         }
 
 
@@ -145,10 +142,11 @@ namespace Handshake.Controllers
             return View();
         }
 
+        [AllowAnonymous]
         public async Task<IActionResult> ExternalLoginCallback(string returnUrl = null)
         {
+            _logger.LogInformation("External Login Callback");
             var info = await _signInManager.GetExternalLoginInfoAsync();
-            Console.WriteLine(info.Principal.FindFirstValue(ClaimTypes.Email));
             if (info == null)
             {
                 return RedirectToAction(nameof(Login));
@@ -159,16 +157,19 @@ namespace Handshake.Controllers
             return await ExternalLoginConfirmation(new ExternalLoginModel { Email = email }, returnUrl);
         }
 
+        [AllowAnonymous]
         public IActionResult ExternalLogin(string provider, string returnUrl = null)
         {
+            _logger.LogInformation("External login started");
             var redirectUrl = "https://localhost:44351" + Url.Action(nameof(ExternalLoginCallback), "Account", new { returnUrl });
-            Console.WriteLine(redirectUrl);
-            Console.WriteLine(returnUrl);
+            _logger.LogInformation(redirectUrl);
+            _logger.LogInformation(returnUrl);
             var properties = _signInManager.ConfigureExternalAuthenticationProperties(provider, redirectUrl);
             return Challenge(properties, provider);
         }
 
         [HttpPost]
+        [AllowAnonymous]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ExternalLoginConfirmation(ExternalLoginModel model, string returnUrl = null)
         {
@@ -184,16 +185,19 @@ namespace Handshake.Controllers
 
             if (user != null)
             {
+                _logger.LogInformation("External user already exists... logging in");
                 await _signInManager.SignInAsync(user, isPersistent: false);
                 return RedirectToLocal(returnUrl);
             }
             else
             {
+                _logger.LogInformation("External user does not exist... creating new account");
                 model.Principal = info.Principal;
                 ApplicationUser newUser = new ApplicationUser();
                 newUser.Email = info.Principal.FindFirstValue(ClaimTypes.Email);
                 newUser.UserName = info.Principal.FindFirstValue(ClaimTypes.Name).Replace(" ", "");
                 result = await _userManager.CreateAsync(newUser);
+                await _userManager.AddToRoleAsync(newUser, "Player");
                 await _signInManager.SignInAsync(newUser, isPersistent: false);
                 return RedirectToLocal(returnUrl);
             }
@@ -211,6 +215,7 @@ namespace Handshake.Controllers
 
         private IActionResult RedirectToLocal(string returnUrl)
         {
+            _logger.LogInformation("Redirecting to: " + returnUrl);
             if (Url.IsLocalUrl(returnUrl))
             {
                 return Redirect(returnUrl);

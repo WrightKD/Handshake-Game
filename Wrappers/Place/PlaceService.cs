@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using RestSharp;
 using System;
@@ -9,8 +10,16 @@ using System.Threading.Tasks;
 
 namespace Handshake.Wrappers.Place
 {
+
+    
     public class PlaceService
     {
+        static ILogger _logger;
+
+        public PlaceService(ILogger<PlaceService> logger) {
+            _logger = logger;
+        }
+
         private static T GetResource<T>(string description, Tuple<string, string>[] parameters = null) where T : new()
         {
             var client = new RestClient { BaseUrl = new Uri("https://maps.googleapis.com/maps/api/place/nearbysearch/json") };
@@ -23,7 +32,10 @@ namespace Handshake.Wrappers.Place
 
             var response = client.Execute<T>(request);
             var content = response.Content;
-
+            if (!response.IsSuccessful)
+            {
+                _logger.LogError($"Request {request.Method} {request.Resource} was unsuccessful");
+            }
             if (response.ErrorException != null)
                 throw new ApplicationException($"Unable to retrieve {description}.", response.ErrorException);
 
@@ -43,9 +55,6 @@ namespace Handshake.Wrappers.Place
 
                 });
 
-            //Console.WriteLine($"The next ISS pass for {latitude} {longitude} is " +
-            //                  $"{DateTimeOffset.FromUnixTimeSeconds(nextPass.Risetime)} " +
-            //                  $"for {nextPass.Duration} seconds.");
         }
 
 
