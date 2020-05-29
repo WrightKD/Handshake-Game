@@ -139,10 +139,14 @@ namespace Handshake.Controllers
             var properties = new List<Dictionary<string, string>>();
             var coordinates = new List<List<double>>();
 
+            int shopId = 0;
             foreach (var item in shops.Results)
             {
+                _gameService.AddShop(shopId, item.Name);
+                shopId++;
                 var currentProperties = new Dictionary<string, string>
                 {
+                    {"ID", shopId.ToString() },
                     {"name", item.Name }
                 };
                 properties.Add(currentProperties);

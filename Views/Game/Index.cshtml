@@ -178,6 +178,10 @@
             center: [playerLong, playerLat,]
         });
 
+        var marker = new mapboxgl.Marker()
+            .setLngLat([playerLong, playerLat])
+            .addTo(map);
+
         var nav = new mapboxgl.NavigationControl();
 
         map.addControl(nav, 'bottom-right');
@@ -381,8 +385,8 @@
                     'type': 'symbol',
                     'source': 'npcs_source',
                     'layout': {
-                        'icon-image': 'volcano-15', //this needs to be changed
-                        'icon-size': 2
+                        'icon-image': 'marker-15', //this needs to be changed
+                        'icon-size': 3
                     }
                 });
 
@@ -432,8 +436,8 @@
                     'type': 'symbol',
                     'source': 'shops_source',
                     'layout': {
-                        'icon-image': 'rocket-15', //this needs to be changed
-                        'icon-size': 2
+                        'icon-image': 'shop-15', //this needs to be changed
+                        'icon-size': 3
                     }
                 });
 

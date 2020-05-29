@@ -7,9 +7,10 @@ namespace Handshake.Models
 {
     public class Shop
     {
-        public Shop(int id, int sanitiserCount, int sanitiserCost, int maskCount, int maskCost, int testCount, int testCost)
+        public Shop(int id, string name, int sanitiserCount, int sanitiserCost, int maskCount, int maskCost, int testCount, int testCost)
         {
             ID = id;
+            Name = name;
             SanitiserCount = sanitiserCount;
             SanitiserCost = sanitiserCost;
             MaskCount = maskCount;
@@ -20,6 +21,7 @@ namespace Handshake.Models
         }
 
         public int ID { get; set; }
+        public string Name { get; set; }
         public int SanitiserCount { get; set; }
         public int SanitiserCost { get; set; }
         public int MaskCount { get; set; }
