@@ -38,7 +38,7 @@ namespace HandshakeGame.Controllers
                 return RedirectToAction("Login", "Account");
             }
 
-            return View();
+            return RedirectToAction("Index", "Game");
         }
 
         public IActionResult GetCovidStats()
