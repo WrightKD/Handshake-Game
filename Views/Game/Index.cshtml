@@ -383,6 +383,7 @@
         const ShopUpdate = async (id) => {
             getShopInventory(id).then((data) => {
                 console.log(data)
+                $("#shop").html(data.name)
                 $("#sanQ").html("x" + data.sanitiserCount)
                 $("#sanC").html("G" + data.sanitiserCost)
                 $("#maskQ").html("x" + data.maskCount)
