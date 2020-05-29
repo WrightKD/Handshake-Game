@@ -17,7 +17,7 @@ namespace Handshake.Wrappers.Weather
             _logger = logger;
         }
 
-        //https://api.openweathermap.org/data/2.5/weather?lat=-26.1796856&lon=28.0509079&appid=1966bff07554d73e9faeb640c8d63bae
+        //https://api.openweathermap.org/data/2.5/weather?lat=-26.1796856&lon=28.0509079&appid=
         private static T GetResource<T>(string description, Tuple<string, string>[] parameters = null) where T : new()
         {
             var client = new RestClient { BaseUrl = new Uri("https://api.openweathermap.org/data/2.5/weather") };
