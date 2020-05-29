@@ -26,7 +26,12 @@
             bottom: 50px;
             width: 100%;
         }
-
+        .mask {
+            position: absolute;
+            top: 50px;
+            z-index:4;
+            
+        }
         .UIText {
             font-family: "Great Vibes", cursive;
         }
@@ -39,7 +44,7 @@
         <h5 class=" w3-padding UIText">INVENTORY</h5>
         <a href="#" class="w3-bar-item w3-button" id="sanitizer" onclick="useSanitiser()">Sanitizer: x0</a>
         <a href="#" class="w3-bar-item w3-button" id="mask" onclick="useMask()">Mask: x0</a>
-        <a href="#" class="w3-bar-item w3-button" id="covidTest" onclick="test()">Covid-19 Test: x0</a>
+        <a href="#" class="w3-bar-item w3-button" id="covidTest" onclick="useTest()">Covid-19 Test: x0</a>
         <h5 class=" w3-padding UIText">USER</h5>
         @if (User.IsInRole("ADMIN"))
         {
@@ -56,6 +61,7 @@
             <button class="w3-button w3-xlarge w3-right" onclick="openRightMenu()">&#9776;</button>
         </div>
     </div>
+    <i id="UM" class="fas fa-head-side-mask mask" title="Mask" style='font-size:50px;color:green;display:none'></i>
     <div id='map'></div>
     <div id="CovidBar" class="w3-row UIText w3-dark-grey" style="position: relative;">
 
@@ -77,8 +83,8 @@
                     <div class="w3-input w3-border w3-margin-bottom UIText"><b id="Username"></b></div>
                     <label class="UIText"><b>Traits</b></label>
                     <div class="w3-input w3-border UIText"><b id="Traits"></b></div>
-                    <button class="w3-button w3-section w3-padding" id="handShake" data-id="0" onclick="shakeHand($(this).data('id'))" title="Shake players hand" style="font-size:24px"><i class="fa fa-handshake-o"></i></button>
-                    <button class="w3-button w3-section w3-padding" id="highFive" onclick="highFive($(this).data('id'))" title="High five player" style='font-size:24px; display:none'><i class='fas fa-praying-hands'></i></button>
+                    <button class="w3-button w3-section w3-padding" id="handShake" data-id="0" onclick="shakeHand($(this).attr('data-id'))" title="Shake players hand" style="font-size:24px"><i class="fa fa-handshake-o"></i></button>
+                    <button class="w3-button w3-section w3-padding" id="highFive" onclick="highFive($(this).attr('data-id'))" title="High five player" style='font-size:24px; display:none'><i class='fas fa-praying-hands'></i></button>
                 </div>
             </div>
 
@@ -98,7 +104,7 @@
                 <br>
                 <span onclick="document.getElementById('shopModal').style.display='none'"
                       class="w3-button w3-xlarge w3-transparent w3-display-topright  UIText" title="Close Modal">×</span>
-                <h1 id="shop" class=" UIText" data-id="10">SHOP</h1>
+                <h1 id="shop" class=" UIText" data-id="0">SHOP</h1>
                 <i class='fas fa-shopping-basket w3-circle w3-margin-top' style='font-size:200px;color:grey'></i>
             </div>
             <div class="w3-container">
@@ -119,10 +125,10 @@
                             <i class="fas fa-pump-medical" title="Sanatizer" style='font-size:100px;color:grey'></i>
                         </div>
                         <div class="w3-col w3-margin-top s4">
-                            <h1 class=" UIText">x10</h1>
+                            <h1 class=" UIText" id="sanQ">x10</h1>
                         </div>
                         <div class="w3-col s4">
-                            <button class=" w3-button w3-block w3-green" onclick="buySanitiser($('#shop').data('id'))"><h1 class=" UIText">Buy</h1></button>
+                            <button class=" w3-button w3-block w3-green" onclick="buySanitiser($('#shop').attr('data-id'))"><h1 id="sanC" class=" UIText">Buy</h1></button>
                         </div>
                     </div>
                     <div class="w3-row w3-padding w3-border w3-center">
@@ -130,10 +136,10 @@
                             <i class="fas fa-head-side-mask" title="Mask" style='font-size:100px;color:grey'></i>
                         </div>
                         <div class="w3-col w3-margin-top s4">
-                            <h1 class=" UIText">x10</h1>
+                            <h1 class=" UIText" id="maskQ">x10</h1>
                         </div>
                         <div class="w3-col s4">
-                            <button class=" w3-button w3-block w3-green" onclick="buyMask($('#shop').data('id'))"><h1 class=" UIText">Buy</h1></button>
+                            <button class=" w3-button w3-block w3-green" onclick="buyMask($('#shop').attr('data-id'))"><h1 id="maskC" class=" UIText">Buy</h1></button>
                         </div>
                     </div>
                     <div class="w3-row w3-padding w3-border w3-center">
@@ -141,10 +147,10 @@
                             <i class="fas fa-vials" title="Covid-19 Test Kit" style='font-size:100px;color:grey'></i>
                         </div>
                         <div class="w3-col w3-margin-top s4">
-                            <h1 class=" UIText">x10</h1>
+                            <h1 class=" UIText" id="testQ">x10</h1>
                         </div>
                         <div class="w3-col s4">
-                            <button class=" w3-button w3-block w3-green" onclick="buyTest($('#shop').data('id'))"><h1 class=" UIText">Buy</h1></button>
+                            <button class=" w3-button w3-block w3-green" onclick="buyTest($('#shop').attr('data-id'))"><h1 id="testC" class=" UIText">Buy</h1></button>
                         </div>
                     </div>
                 </div>
@@ -270,27 +276,44 @@
             var response = await fetch('/Game/ShakeHand?npcId=' + npcId);
             var data = await response.json();
             //console.log(data);
+            document.getElementById('playerInfo').style.display = 'none';
+            UpdateUI();
             return data;
         }
 
         const useSanitiser = async () => {
             var response = await fetch('/Game/UseSanitiser');
             var data = await response.json();
+            alert("You've been sanitised")
             console.log("Infected: " + data.isInfected + "\nSanitiser: " + data.sanitiserCount);
+            UpdateUI();
             return data;
         }
 
         const useMask = async () => {
             var response = await fetch('/Game/UseMask');
             var data = await response.json();
-           // console.log("Infected: " + data.isInfected + "\nSanitiser: " + data.sanitiserCount);
+            $("#UM").show()
+            function timeOut() {
+                setTimeout(function () { $("#UM").hide(); }, maskDuration);
+            }
+            timeOut()
+            // console.log("Infected: " + data.isInfected + "\nSanitiser: " + data.sanitiserCount);
+            UpdateUI();
             return data;
         }
 
         const useTest = async () => {
             var response = await fetch('/Game/UseTest');
             var data = await response.json();
+            if (data) {
+                alert("You've been infected")
+            }
+            else {
+                alert("Your safe")
+            }
             // console.log("Infected: " + data.isInfected + "\nSanitiser: " + data.sanitiserCount);
+            UpdateUI();
             return data;
         }
 
@@ -307,6 +330,7 @@
             var data = await response.json();
             console.log("BuySanitiser: ");
             console.log(data);
+            UpdateUI();
             return data;
         }
 
@@ -315,6 +339,8 @@
             var data = await response.json();
             console.log("BuyMask: ");
             console.log(data);
+            ShopUpdate(shakeHand)
+            UpdateUI();
             return data;
         }
 
@@ -323,6 +349,8 @@
             var data = await response.json();
             console.log("BuyTest: ");
             console.log(data);
+            ShopUpdate(shakeHand)
+            UpdateUI();
             return data;
         }
 
@@ -330,6 +358,7 @@
             var response = await fetch('/Game/InitialiseShops?latitude=' + playerLat + '&longitude=' + playerLong);
             var data = await response.json();
             console.log("Shops: ");
+            ShopUpdate(shakeHand)
             console.log(data);
             return data;
         }
@@ -342,8 +371,22 @@
                 $("#levelScore").html("Score: " + data.scoreCurrent + "/" + data.scorePerLevel);
                 $("#sanitizer").html("Sanitizer: x" + data.sanitiserCount);
                 $("#mask").html("Mask: x" + data.maskCount);
-                $("#covidTest").html("Covid-19 Test: x" + data.covidTestCount);
+                $("#covidTest").html("Covid-19 Test: x" + data.testCount);
             });
+        }
+
+        const ShopUpdate = async (id) => {
+            getShopInventory(id).then((data) => {
+                console.log(data)
+                $("#sanQ").html("x" + data.sanitiserCount)
+                $("#sanC").html("G" + data.sanitiserCost)
+                $("#maskQ").html("x" + data.maskCount)
+                $("#maskC").html("G" + data.maskCost)
+                $("#testQ").html("x" + data.testCount)
+                $("#testC").html("G" + data.testCost)
+
+
+            })
         }
 
         function initGameData() {
@@ -396,11 +439,11 @@
                         $("#highFive").show()
                     }
                     $("#handShake").attr("data-id", e.features[0].id)
-                    //comment line below out when isNpcReady is working 
-                    document.getElementById('playerInfo').style.display = 'block'
-                    isNPCReady().then((data) => {
+                    //comment line below out when isNpcReady is working
+                    //document.getElementById('playerInfo').style.display = 'block'
+                    isNPCReady(e.features[0].id).then((data) => {
                         if (data) {
-                            //document.getElementById('playerInfo').style.display = 'block'
+                            document.getElementById('playerInfo').style.display = 'block'
                         }
                         else {
                             alert("player needs to rest. Come back later")
@@ -440,6 +483,10 @@
                 // Center the map on the coordinates of any clicked symbol from the 'symbols' layer.
                 map.on('click', 'shops_layer', function (e) {
                     //add functionality here
+                    $("#shop").attr("data-id", e.features[0].id)
+                    ShopUpdate(e.features[0].id).then((data) => {
+                        document.getElementById('shopModal').style.display = 'block'
+                    })
                 });
 
                 // Change the cursor to a pointer when the it enters a feature in the 'symbols' layer.
