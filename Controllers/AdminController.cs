@@ -43,6 +43,32 @@ namespace Handshake.Controllers
             return View();
         }
 
+        public async Task<IActionResult> Details(int id)
+        {
+            if (id == null)
+            {
+                 return NotFound();
+            }
+
+            
+             ViewBag.Users = await _adminService.GetUserDetails(id);
+              _logger.LogInformation(" Admin is Displaying Details for User by Id ");
+             return View();
+        }
+
+        public async Task<IActionResult> Edit(string id)
+        {
+            
+             var user = await _userManager.FindByIdAsync(id);
+             await _userManager.AddToRoleAsync(user, "Admin");
+            _logger.LogInformation(" Admin is Editing role for User :"+  id );
+
+            int userID = Int16.Parse(id);
+            ViewBag.Users = await _adminService.GetUserDetails(userID);
+            return View();
+        }
+
     }
+
 
 }

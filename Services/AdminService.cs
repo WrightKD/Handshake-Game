@@ -28,6 +28,16 @@ namespace Handshake.Services
                 return await connection.QueryAsync<ApplicationUser>($@"SELECT * FROM [ApplicationUser];");
             }
         }
+
+        public async Task<IEnumerable<ApplicationUser>> GetUserDetails(int id)
+        {
+            
+            using (var connection = new SqlConnection(Configuration.GetConnectionString("DefaultConnection")))
+            {
+                await connection.OpenAsync();
+                return await connection.QueryAsync<ApplicationUser>($@"SELECT * FROM [ApplicationUser] WHERE [Id] = @{nameof(id)}", new { id });
+            }
+        }
     }
 
 
