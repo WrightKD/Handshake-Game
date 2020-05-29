@@ -21,7 +21,7 @@ namespace Handshake.GameLogic
         //player vars
         private readonly int handShakePoints;
         private readonly double playerBaseInfectionChance; //modified by weather/going to shop/work
-        private readonly double maskDuration;
+        public readonly double maskDuration;
         private bool isMaskOn;
         private DateTime timeMaskUsed;
         //shop vars

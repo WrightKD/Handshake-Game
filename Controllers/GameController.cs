@@ -80,12 +80,12 @@ namespace Handshake.Controllers
         public IActionResult UseMask()//change name
         {
             _gameService.UseMask();
-            return new JsonResult(_gameService.player.MaskCount);
+            return new JsonResult(_gameService.maskDuration);
         }
-        public IActionResult UseTest()//change name
+        public bool UseTest()//change name
         {
             _gameService.UseTest();
-            return new JsonResult(_gameService.player.IsInfected);
+            return _gameService.player.IsInfected;
         }
 
         public IActionResult GetShopInventory(int shopId)
