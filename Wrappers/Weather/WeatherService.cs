@@ -49,7 +49,7 @@ namespace Handshake.Wrappers.Weather
                     Tuple.Create("lat", $"{latitude}"),
                     Tuple.Create("lon", $"{longitude}"),
                     Tuple.Create("units", "metric"),
-                    Tuple.Create("appid", "1966bff07554d73e9faeb640c8d63bae")
+                    Tuple.Create("appid", "")
 
                 });
         }

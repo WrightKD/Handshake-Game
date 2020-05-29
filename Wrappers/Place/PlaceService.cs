@@ -41,7 +41,7 @@ namespace Handshake.Wrappers.Place
 
             return response.Data;
         }
-        //https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=-33.8670522,151.1957362&radius=1500&type=hospital&key=AIzaSyCixAM65iGRvG2fOn3IQ4mjIC0qv3zuLOU
+       
         public static PlaceStructure GetPlaces(string type, string radius, string latitude, string longitude)
         {
 
@@ -51,7 +51,7 @@ namespace Handshake.Wrappers.Place
                     Tuple.Create("location", $"{latitude},{longitude}"), 
                     Tuple.Create("radius", radius), 
                     Tuple.Create("type", type), 
-                    Tuple.Create("key", "AIzaSyCixAM65iGRvG2fOn3IQ4mjIC0qv3zuLOU") 
+                    Tuple.Create("key", "") 
 
                 });
 

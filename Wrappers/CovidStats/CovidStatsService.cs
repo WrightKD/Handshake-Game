@@ -22,7 +22,7 @@ namespace Handshake.Wrappers.CovidStats
         public static Stats GetStats()
         {
             // This is the new API with my key, it has a daily request limit of 24
-            //var client = new RestClient { BaseUrl = new Uri("https://corona-stats.mobi/api/json.2.0.php?key=3BVeoNyhI6QCd1xRl0JK") };
+            //var client = new RestClient { BaseUrl = new Uri("https://corona-stats.mobi/api/json.2.0.php?") };
 
             //please use this api for tesing . it has unlimited request but has a data thats abit out of date 
             var client = new RestClient { BaseUrl = new Uri("https://bozzaapi.azurewebsites.net/api/stats") };

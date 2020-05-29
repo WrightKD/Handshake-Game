@@ -45,7 +45,7 @@ namespace Handshake.Wrappers.Mapbox
 
             return GetResource<LocationStructure>($"{latitude},{longitude}.json",
               new[] {
-                    Tuple.Create("access_token", "pk.eyJ1Ijoid3JpZ2h0a2QiLCJhIjoiY2thN3duNW42MDR5bjJ3c2JibGZjdTc5aSJ9.WfzsXOP8KI0_PVo9su3ubw")
+                    Tuple.Create("access_token", "")
               });
         }
 
