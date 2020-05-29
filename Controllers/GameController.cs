@@ -143,7 +143,6 @@ namespace Handshake.Controllers
             foreach (var item in shops.Results)
             {
                 _gameService.AddShop(shopId, item.Name);
-                shopId++;
                 var currentProperties = new Dictionary<string, string>
                 {
                     {"ID", shopId.ToString() },
@@ -151,6 +150,7 @@ namespace Handshake.Controllers
                 };
                 properties.Add(currentProperties);
                 coordinates.Add(new List<double> { item.Geometry.Location.Lng, item.Geometry.Location.Lat });
+                shopId++;
             }
             var geolocation = Converter.GetGeoJSON(coordinates, properties);
 
